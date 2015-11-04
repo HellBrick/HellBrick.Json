@@ -13,15 +13,14 @@ namespace HellBrick.Json.Deserialization.Providers
 {
 	internal class CollectionDeserializerBuilderProvider : IDeserializerBuilderProvider
 	{
-		ExpressionDeserializerBuilder<T> IDeserializerBuilderProvider.TryCreateBuilder<T>()
+		IDeserializerBuilder<T> IDeserializerBuilderProvider.TryCreateBuilder<T>()
 		{
 			CollectionTypeInfo collectionTypeInfo = CollectionTypeInfo.TryCreate( typeof( T ) );
 			if ( collectionTypeInfo == null )
 				return null;
 
 			Type builderType = typeof( CollectionDeserializerBuilder<,> ).MakeGenericType( collectionTypeInfo.EnumerableTypeInfo.CollectionType, collectionTypeInfo.EnumerableTypeInfo.ItemType );
-			ExpressionDeserializerBuilder<T> builder = Activator.CreateInstance( builderType, new object[] { collectionTypeInfo.AddMethod } ) as ExpressionDeserializerBuilder<T>;
-			return builder;
+			return Activator.CreateInstance( builderType, new object[] { collectionTypeInfo.AddMethod } ) as IDeserializerBuilder<T>;
 		}
 
 		private class CollectionDeserializerBuilder<TCollection, TItem> : ExpressionDeserializerBuilder<TCollection>

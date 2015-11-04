@@ -13,14 +13,14 @@ namespace HellBrick.Json.Deserialization.Providers
 {
 	internal class ArrayDeserializerBuilderProvider : IDeserializerBuilderProvider
 	{
-		public ExpressionDeserializerBuilder<T> TryCreateBuilder<T>()
+		public IDeserializerBuilder<T> TryCreateBuilder<T>()
 		{
 			Type arrayType = typeof( T );
 			if ( !arrayType.IsArray || arrayType.GetArrayRank() != 1 )
 				return null;
 
 			Type itemType = arrayType.GetElementType();
-			return Activator.CreateInstance( typeof( ArrayDeserializerBuilder<,> ).MakeGenericType( arrayType, itemType ) ) as ExpressionDeserializerBuilder<T>;
+			return Activator.CreateInstance( typeof( ArrayDeserializerBuilder<,> ).MakeGenericType( arrayType, itemType ) ) as IDeserializerBuilder<T>;
 		}
 
 		private class ArrayDeserializerBuilder<TArray, TItem> : ExpressionDeserializerBuilder<TArray>

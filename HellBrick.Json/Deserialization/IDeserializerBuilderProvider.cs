@@ -8,6 +8,6 @@ namespace HellBrick.Json.Deserialization
 {
 	internal interface IDeserializerBuilderProvider
 	{
-		ExpressionDeserializerBuilder<T> TryCreateBuilder<T>();
+		IDeserializerBuilder<T> TryCreateBuilder<T>();
 	}
 }

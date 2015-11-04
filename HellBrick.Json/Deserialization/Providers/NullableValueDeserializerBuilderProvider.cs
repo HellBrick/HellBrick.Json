@@ -29,7 +29,7 @@ namespace HellBrick.Json.Deserialization.Providers
 				.ToDictionary( m => m.ReturnType, m => m );
 		}
 
-		public ExpressionDeserializerBuilder<T> TryCreateBuilder<T>()
+		public IDeserializerBuilder<T> TryCreateBuilder<T>()
 		{
 			MethodInfo readMethod = _readValueMethods.GetOrDefault( typeof( T ) );
 			return readMethod != null ? new ValueDeserializerBuilder<T>( readMethod ) : null;
