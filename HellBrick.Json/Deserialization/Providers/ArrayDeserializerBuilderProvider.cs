@@ -23,12 +23,10 @@ namespace HellBrick.Json.Deserialization.Providers
 			return Activator.CreateInstance( typeof( ArrayDeserializerBuilder<> ).MakeGenericType( itemType ) ) as IDeserializerBuilder<T>;
 		}
 
-		private class ArrayDeserializerBuilder<TItem> : IDeserializerBuilder<TItem[]>
+		private class ArrayDeserializerBuilder<TItem> : RelayDeserializerBuilder<TItem[], List<TItem>>
 		{
-			public Func<JsonReader, TItem[]> BuildDeserializationMethod()
+			public ArrayDeserializerBuilder() : base( list => list.ToArray() )
 			{
-				JsonDeserializer<List<TItem>> innerDeserializer = JsonFactory.DeserializerFor<List<TItem>>();
-				return reader => innerDeserializer.Deserialize( reader ).ToArray();
 			}
 		}
 	}
