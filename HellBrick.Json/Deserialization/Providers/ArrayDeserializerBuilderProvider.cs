@@ -20,26 +20,15 @@ namespace HellBrick.Json.Deserialization.Providers
 				return null;
 
 			Type itemType = arrayType.GetElementType();
-			return Activator.CreateInstance( typeof( ArrayDeserializerBuilder<,> ).MakeGenericType( arrayType, itemType ) ) as IDeserializerBuilder<T>;
+			return Activator.CreateInstance( typeof( ArrayDeserializerBuilder<> ).MakeGenericType( itemType ) ) as IDeserializerBuilder<T>;
 		}
 
-		private class ArrayDeserializerBuilder<TArray, TItem> : ExpressionDeserializerBuilder<TArray>
+		private class ArrayDeserializerBuilder<TItem> : IDeserializerBuilder<TItem[]>
 		{
-			private static readonly MethodInfo _toArray = Reflection.Method( () => Enumerable.ToArray( default( List<TItem> ) ) );
-
-			protected override Expression BuildDeserializerBody( DeserializeParameters<TArray> parameters )
+			public Func<JsonReader, TItem[]> BuildDeserializationMethod()
 			{
-				return Expression.Call
-				(
-					null,
-					_toArray,
-					Expression.Call
-					(
-						Expression.Call( null, JsonFactoryMembers<List<TItem>>.DeserializerFor ),
-						JsonDeserializerMembers<List<TItem>>.Deserialize,
-						parameters.Reader
-					)
-				);
+				JsonDeserializer<List<TItem>> innerDeserializer = JsonFactory.DeserializerFor<List<TItem>>();
+				return reader => innerDeserializer.Deserialize( reader ).ToArray();
 			}
 		}
 	}
