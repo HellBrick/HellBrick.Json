@@ -44,6 +44,7 @@
     <Compile Include="Deserialization\IDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\ArrayDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\CollectionDeserializerBuilderProvider.cs" />
+    <Compile Include="Deserialization\Providers\NonNullableValueDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\NullableValueDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\RelayDeserializerBuilder.cs" />
     <Compile Include="Serialization\ExpressionSerializerBuilder.cs" />
