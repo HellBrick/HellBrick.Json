@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace HellBrick.Json.Deserialization
+namespace HellBrick.Json.DeserializationOld
 {
 	internal interface IDeserializerBuilder<T>
 	{

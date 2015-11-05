@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace HellBrick.Json.Deserialization
+namespace HellBrick.Json.DeserializationOld
 {
 	internal abstract class ExpressionDeserializerBuilder<T> : IDeserializerBuilder<T>
 	{

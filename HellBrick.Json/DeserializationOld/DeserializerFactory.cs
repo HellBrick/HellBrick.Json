@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HellBrick.Json.Deserialization.Providers;
+using HellBrick.Json.DeserializationOld.Providers;
 using Newtonsoft.Json;
 
-namespace HellBrick.Json.Deserialization
+namespace HellBrick.Json.DeserializationOld
 {
 	internal static class DeserializerFactory
 	{

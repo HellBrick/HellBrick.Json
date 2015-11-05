@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HellBrick.Json.Deserialization
+namespace HellBrick.Json.DeserializationOld
 {
 	internal interface IDeserializerBuilderProvider
 	{

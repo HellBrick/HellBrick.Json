@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HellBrick.Json.Deserialization;
+using HellBrick.Json.DeserializationOld;
 using HellBrick.Json.Serialization;
 
 namespace HellBrick.Json
