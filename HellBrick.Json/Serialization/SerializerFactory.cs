@@ -1,31 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using HellBrick.Json.Serialization.Providers;
 using Newtonsoft.Json;
 
 namespace HellBrick.Json.Serialization
 {
 	internal static class SerializerFactory
 	{
-		private static readonly ISerializerBuilderProvider[] _providers =
-		{
-			new ValueSerializerBuilderProvider(),
-			new ArraySerializerBuilderProvider(),
-			new CollectionSerializerBuilderProvider(),
-			new ClassSerializerBuilderProvider(),
-			new FallbackSerializerBuilderProvider()
-		};
-
 		public static JsonSerializer<T> CreateSerializer<T>()
 		{
-			ISerializerBuilder<T> builder = _providers.Select( p => p.TryCreateBuilder<T>() ).FirstOrDefault( b => b != null );
-			if ( builder == null )
-				throw new NotSupportedException( $"Failed to create serializer builder for {typeof( T ).Name}" );
-
-			Action<T, JsonWriter> serializationMethod = builder.BuildSerializationMethod();
+			ISerializeExpressionBuilder<T> builder = SerializeExpressionBuilderSelector.SelectBuilder<T>();
+			SerializeParameters<T> parameters = new SerializeParameters<T>();
+			Expression serializationBody = builder.BuildSerializationExpression( parameters.Value, parameters.Writer );
+			Expression<Action<T, JsonWriter>> lambda = Expression.Lambda<Action<T, JsonWriter>>( serializationBody, parameters.Parameters );
+			Action<T, JsonWriter> serializationMethod = lambda.Compile();
 			return new JsonSerializer<T>( serializationMethod );
 		}
 	}
