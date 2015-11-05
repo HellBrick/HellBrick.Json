@@ -63,26 +63,8 @@ namespace HellBrick.Json.Serialization.Providers
 
 			private Expression WritePropertyValueExpression( PropertyInfo property, Expression value, Expression writer )
 			{
-				Type jsonSerializerType = typeof( JsonSerializer<> ).MakeGenericType( property.PropertyType );
-				MethodInfo serializeMethod =
-					(
-						from method in jsonSerializerType.GetTypeInfo().GetDeclaredMethods( nameof( JsonSerializer<object>.Serialize ) )
-						let args = method.GetParameters()
-						where args.Length == 2 && args[ 0 ].ParameterType == property.PropertyType && args[ 1 ].ParameterType == typeof( JsonWriter )
-						select method
-					)
-					.FirstOrDefault();
-
-				Type jsonFactoryMembersType = typeof( JsonFactoryMembers<> ).MakeGenericType( property.PropertyType );
-				FieldInfo serializerForField = jsonFactoryMembersType.GetTypeInfo().GetDeclaredField( nameof( JsonFactoryMembers<object>.SerializerFor ) );
-				MethodInfo serializerFactoryMethod = serializerForField.GetValue( null ) as MethodInfo;
-
-				return Call
-				(
-					Call( null, serializerFactoryMethod ),
-					serializeMethod,
-					Property( value, property ), writer
-				);
+				Expression propertyValue = Property( value, property );
+				return SerializeExpressionFactory.BuildSerializationExpression( propertyValue, writer );
 			}
 		}
 	}
