@@ -19,7 +19,9 @@ namespace HellBrick.Json.Deserialization.Providers
 			if ( collectionTypeInfo == null )
 				return null;
 
-			Type builderType = typeof( CollectionDeserializerBuilder<,> ).MakeGenericType( collectionTypeInfo.EnumerableTypeInfo.CollectionType, collectionTypeInfo.EnumerableTypeInfo.ItemType );
+			Type collectionType = collectionTypeInfo.EnumerableTypeInfo.CollectionType;
+			Type itemType = collectionTypeInfo.EnumerableTypeInfo.ItemType;
+			Type builderType = typeof( CollectionDeserializerBuilder<,> ).MakeGenericType( collectionType, itemType );
 			return Activator.CreateInstance( builderType, new object[] { collectionTypeInfo.AddMethod } ) as IDeserializerBuilder<T>;
 		}
 
