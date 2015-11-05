@@ -16,7 +16,7 @@ namespace HellBrick.Json
 		private static readonly Cache _serializerCache = new Cache();
 
 		public static JsonDeserializer<T> DeserializerFor<T>() => _deserializerCache.GetOrCreate( typeof( T ), () => DeserializerFactory.CreateDeserializer<T>() );
-		public static JsonSerializer<T> SerializerFor<T>() => _serializerCache.GetOrCreate( typeof( T ), () => OldSerializerFactory.CreateSerializer<T>() );
+		public static JsonSerializer<T> SerializerFor<T>() => _serializerCache.GetOrCreate( typeof( T ), () => SerializerFactory.CreateSerializer<T>() );
 
 		private class Cache
 		{
