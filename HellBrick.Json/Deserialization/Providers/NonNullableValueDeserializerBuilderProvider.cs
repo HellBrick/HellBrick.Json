@@ -13,7 +13,7 @@ namespace HellBrick.Json.Deserialization.Providers
 		public IDeserializerBuilder<T> TryCreateBuilder<T>()
 		{
 			TypeInfo typeInfo = typeof( T ).GetTypeInfo();
-			if ( !typeInfo.IsValueType || typeInfo.IsNullable() )
+			if ( !typeInfo.IsNonNullableValue() )
 				return null;
 
 			return Activator.CreateInstance( typeof( NonNullableValueDeserializerBuilder<> ).MakeGenericType( typeof( T ) ) ) as IDeserializerBuilder<T>;
