@@ -39,7 +39,6 @@ namespace HellBrick.Json.Serialization.Providers
 			private IEnumerable<Expression> EnumerateSerializerExpressions( Expression value, Expression writer, LocalVariables locals )
 			{
 				yield return Expression.Call( writer, JsonWriterMembers.WriteStartArray );
-				yield return Expression.Assign( locals.ItemSerializer, Expression.Call( null, JsonFactoryMembers<TItem>.SerializerFor ) );
 				yield return Expression.Assign( locals.Enumerator, Expression.Call( value, _enumerableTypeInfo.GetEnumeratorMethod ) );
 
 				LabelTarget loopBreak = Expression.Label( "loopBreak" );
@@ -49,12 +48,7 @@ namespace HellBrick.Json.Serialization.Providers
 					Expression.IfThenElse
 					(
 						Expression.Call( locals.Enumerator, _enumerableTypeInfo.MoveNextMethod ),
-						Expression.Call
-						(
-							locals.ItemSerializer,
-							JsonSerializerMembers<TItem>.Serialize,
-							Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), writer
-						),
+						SerializeExpressionFactory.BuildSerializationExpression( Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), writer ),
 						Expression.Break( loopBreak )
 					),
 					loopBreak
@@ -68,14 +62,10 @@ namespace HellBrick.Json.Serialization.Providers
 				public LocalVariables( EnumerableTypeInfo enumerableTypeInfo )
 				{
 					Enumerator = Expression.Parameter( enumerableTypeInfo.GetEnumeratorMethod.ReturnType, "enumerator" );
-					ItemSerializer = Expression.Parameter( typeof( JsonSerializer<TItem> ), "itemSerializer" );
-
-					Variables = new ParameterExpression[] { Enumerator, ItemSerializer };
+					Variables = new ParameterExpression[] { Enumerator };
 				}
 
 				public ParameterExpression Enumerator { get; }
-				public ParameterExpression ItemSerializer { get; }
-
 				public IEnumerable<ParameterExpression> Variables { get; }
 			}
 		}
