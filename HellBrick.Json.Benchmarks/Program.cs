@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet;
 using HellBrick.Json.Benchmarks.RoundTrip;
+using HellBrick.Json.Benchmarks.Serialization;
 
 namespace HellBrick.Json.Benchmarks
 {
@@ -12,7 +13,7 @@ namespace HellBrick.Json.Benchmarks
 	{
 		static void Main( string[] args )
 		{
-			new BenchmarkRunner().RunCompetition( new IntArrayRoundTripBenchmark() );
+			new BenchmarkRunner().RunCompetition( new FlatClassSerializationBenchmark() );
 		}
 	}
 }

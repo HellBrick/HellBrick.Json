@@ -57,6 +57,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoundTrip\RoundTripBenchmarkCore.cs" />
+    <Compile Include="Serialization\IntArraySerializationBenchmark.cs" />
+    <Compile Include="Serialization\FlatClassSerializationBenchmark.cs" />
+    <Compile Include="Serialization\SerializationBenchmarkCore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
