@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ namespace HellBrick.Json.Deserialization.Providers
 
 		private class NonNullableValueDeserializerBuilder<T> : RelayDeserializerBuilder<T, T?> where T : struct
 		{
-			public NonNullableValueDeserializerBuilder() : base( nullable => nullable.Value )
-			{
-			}
+			private readonly PropertyInfo _value = Reflection.Property( ( T? nullable ) => nullable.Value );
+
+			protected override Expression ConvertToOuter( Expression inner ) => Expression.Property( inner, _value );
 		}
 	}
 }

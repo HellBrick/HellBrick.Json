@@ -5,9 +5,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using HellBrick.Json.Common;
 using HellBrick.Json.Utils;
-using Newtonsoft.Json;
+using static System.Linq.Expressions.Expression;
 
 namespace HellBrick.Json.Deserialization.Providers
 {
@@ -25,9 +24,9 @@ namespace HellBrick.Json.Deserialization.Providers
 
 		private class ArrayDeserializerBuilder<TItem> : RelayDeserializerBuilder<TItem[], List<TItem>>
 		{
-			public ArrayDeserializerBuilder() : base( list => list.ToArray() )
-			{
-			}
+			private readonly MethodInfo _toArray = Reflection.Method( () => Enumerable.ToArray( default( List<TItem> ) ) );
+
+			protected override Expression ConvertToOuter( Expression inner ) => Call( null, _toArray, inner );
 		}
 	}
 }

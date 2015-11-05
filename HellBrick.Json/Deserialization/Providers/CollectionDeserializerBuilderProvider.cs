@@ -13,7 +13,7 @@ namespace HellBrick.Json.Deserialization.Providers
 {
 	internal class CollectionDeserializerBuilderProvider : IDeserializerBuilderProvider
 	{
-		IDeserializerBuilder<T> IDeserializerBuilderProvider.TryCreateBuilder<T>()
+		public IDeserializerBuilder<T> TryCreateBuilder<T>()
 		{
 			CollectionTypeInfo collectionTypeInfo = CollectionTypeInfo.TryCreate( typeof( T ) );
 			if ( collectionTypeInfo == null )
@@ -27,7 +27,7 @@ namespace HellBrick.Json.Deserialization.Providers
 			return Activator.CreateInstance( builderType, new object[] { collectionTypeInfo.AddMethod } ) as IDeserializerBuilder<T>;
 		}
 
-		private abstract class CollectionDeserializerBuilder<TCollection, TItem, TLiftedItem> : ExpressionDeserializerBuilder<TCollection>
+		private abstract class CollectionDeserializerBuilder<TCollection, TItem, TLiftedItem> : IDeserializerBuilder<TCollection>
 		{
 			private readonly MethodInfo _addMethod;
 
@@ -36,31 +36,30 @@ namespace HellBrick.Json.Deserialization.Providers
 				_addMethod = addMethod;
 			}
 
-			protected override Expression BuildDeserializerBody( DeserializeParameters<TCollection> parameters )
+			public Expression BuildDeserializationExpression( Expression reader )
 			{
 				DeserializeLocalVariables locals = new DeserializeLocalVariables();
-				return Expression.Block( typeof( TCollection ), locals.Variables, EnumerateDeserializerExpressions( parameters, locals ) );
+				return Expression.Block( typeof( TCollection ), locals.Variables, EnumerateDeserializerExpressions( reader, locals ) );
 			}
 
-			private IEnumerable<Expression> EnumerateDeserializerExpressions( DeserializeParameters<TCollection> parameters, DeserializeLocalVariables locals )
+			private IEnumerable<Expression> EnumerateDeserializerExpressions( Expression reader, DeserializeLocalVariables locals )
 			{
 				LabelTarget returnLabel = Expression.Label( "return" );
 				LabelTarget loopBreak = Expression.Label( "loopBreak" );
 
 				yield return Expression.Assign( locals.Collection, Expression.New( typeof( TCollection ) ) );
-				yield return Expression.Assign( locals.ItemDeserializer, Expression.Call( null, JsonFactoryMembers<TLiftedItem>.DeserializerFor ) );
 
 				yield return Expression.IfThen
 				(
-					Expression.Call( parameters.Reader, JsonReaderMembers.Read ),
+					Expression.Call( reader, JsonReaderMembers.Read ),
 					Expression.Loop
 					(
 						Expression.Block
 						(
-							Expression.Assign( locals.Item, Expression.Call( locals.ItemDeserializer, JsonDeserializerMembers<TLiftedItem>.Deserialize, parameters.Reader ) ),
+							Expression.Assign( locals.Item, ExpressionFactory.Deserialize( typeof( TLiftedItem ), reader ) ),
 							Expression.IfThenElse
 							(
-								Expression.NotEqual( Expression.Property( parameters.Reader, JsonReaderMembers.TokenType ), Expression.Constant( JsonToken.EndArray ) ),
+								Expression.NotEqual( Expression.Property( reader, JsonReaderMembers.TokenType ), Expression.Constant( JsonToken.EndArray ) ),
 								Expression.Call( locals.Collection, _addMethod, UnliftItem( locals.Item ) ),
 								Expression.Break( loopBreak )
 							)
@@ -78,14 +77,12 @@ namespace HellBrick.Json.Deserialization.Providers
 			{
 				public DeserializeLocalVariables()
 				{
-					ItemDeserializer = Expression.Parameter( typeof( JsonDeserializer<TLiftedItem> ), "itemDeserializer" );
 					Collection = Expression.Parameter( typeof( TCollection ), "collection" );
 					Item = Expression.Parameter( typeof( TLiftedItem ), "item" );
 
-					Variables = new ParameterExpression[] { ItemDeserializer, Collection, Item };
+					Variables = new ParameterExpression[] { Collection, Item };
 				}
 
-				public ParameterExpression ItemDeserializer { get; }
 				public ParameterExpression Collection { get; }
 				public ParameterExpression Item { get; }
 

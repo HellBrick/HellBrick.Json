@@ -1,30 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using static System.Linq.Expressions.Expression;
+using static HellBrick.Json.Deserialization.ExpressionFactory;
 
 namespace HellBrick.Json.Deserialization
 {
-	internal static class RelayDeserializerBuilder
+	internal abstract class RelayDeserializerBuilder<TOuter, TInner> : IDeserializerBuilder<TOuter>
 	{
-		public static IDeserializerBuilder<TFrom> Create<TFrom, TTo>( Func<TTo, TFrom> valueConverter ) => new RelayDeserializerBuilder<TFrom, TTo>( valueConverter );
-	}
-
-	public class RelayDeserializerBuilder<TFrom, TTo> : IDeserializerBuilder<TFrom>
-	{
-		private readonly Func<TTo, TFrom> _valueConverter;
-
-		public RelayDeserializerBuilder( Func<TTo, TFrom> valueConverter )
-		{
-			_valueConverter = valueConverter;
-		}
-
-		public Func<JsonReader, TFrom> BuildDeserializationMethod()
-		{
-			JsonDeserializer<TTo> underlyingDeserializer = JsonFactory.DeserializerFor<TTo>();
-			return reader => _valueConverter( underlyingDeserializer.Deserialize( reader ) );
-		}
+		public Expression BuildDeserializationExpression( Expression reader ) => ConvertToOuter( Deserialize( typeof( TInner ), reader ) );
+		protected abstract Expression ConvertToOuter( Expression inner );
 	}
 }
