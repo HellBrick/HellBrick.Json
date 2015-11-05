@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using HellBrick.Json.Utils;
 using Newtonsoft.Json;
 
-namespace HellBrick.Json.DeserializationOld.Providers
+namespace HellBrick.Json.Deserialization.Providers
 {
 	internal class NullableValueDeserializerBuilderProvider : IDeserializerBuilderProvider
 	{
@@ -35,7 +35,7 @@ namespace HellBrick.Json.DeserializationOld.Providers
 			return readMethod != null ? new ValueDeserializerBuilder<T>( readMethod ) : null;
 		}
 
-		private class ValueDeserializerBuilder<T> : ExpressionDeserializerBuilder<T>
+		private class ValueDeserializerBuilder<T> : IDeserializerBuilder<T>
 		{
 			private readonly MethodInfo _readMethod;
 
@@ -44,10 +44,7 @@ namespace HellBrick.Json.DeserializationOld.Providers
 				_readMethod = readMethod;
 			}
 
-			protected override Expression BuildDeserializerBody( DeserializeParameters<T> parameters )
-			{
-				return Expression.Call( parameters.Reader, _readMethod );
-			}
+			public Expression BuildDeserializationExpression( Expression reader ) => Expression.Call( reader, _readMethod );
 		}
 	}
 }
