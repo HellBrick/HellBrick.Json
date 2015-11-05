@@ -6,39 +6,33 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HellBrick.Json.Common;
+using HellBrick.Json.Utils;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class ArraySerializerBuilderProvider : ISerializerBuilderProvider
+	internal class ArraySerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
 	{
-		public ISerializerBuilder<T> TryCreateBuilder<T>()
+		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
 		{
 			Type arrayType = typeof( T );
 			if ( !arrayType.IsArray || arrayType.GetArrayRank() != 1 )
 				return null;
 
 			Type itemType = arrayType.GetElementType();
-			return Activator.CreateInstance( typeof( ArraySerializerBuilder<,> ).MakeGenericType( arrayType, itemType ) ) as ISerializerBuilder<T>;
+			return Activator.CreateInstance( typeof( ArraySerializeExpressionBuilder<> ).MakeGenericType( itemType ) ) as ISerializeExpressionBuilder<T>;
 		}
 
-		private class ArraySerializerBuilder<TArray, TItem> : ExpressionSerializerBuilder<TArray>
+		private class ArraySerializeExpressionBuilder<TItem> : ISerializeExpressionBuilder<TItem[]>
 		{
-			private readonly PropertyInfo _lengthProperty;
-
-			public ArraySerializerBuilder()
-			{
-				_lengthProperty = typeof( TArray ).GetTypeInfo().BaseType.GetTypeInfo().GetDeclaredProperty( "Length" );
-			}
-
-			protected override Expression BuildSerializerBody( SerializeParameters<TArray> parameters )
+			public Expression BuildSerializationExpression( Expression value, Expression writer )
 			{
 				LocalVariables locals = new LocalVariables();
-				return Expression.Block( locals.Variables, EnumerateExpressions( parameters, locals ) );
+				return Expression.Block( locals.Variables, EnumerateExpressions( value, writer, locals ) );
 			}
 
-			private IEnumerable<Expression> EnumerateExpressions( SerializeParameters<TArray> parameters, LocalVariables locals )
+			private IEnumerable<Expression> EnumerateExpressions( Expression value, Expression writer, LocalVariables locals )
 			{
-				yield return Expression.Call( parameters.Writer, JsonWriterMembers.WriteStartArray );
+				yield return Expression.Call( writer, JsonWriterMembers.WriteStartArray );
 				yield return Expression.Assign( locals.ItemSerializer, Expression.Call( null, JsonFactoryMembers<TItem>.SerializerFor ) );
 				yield return Expression.Assign( locals.Index, Expression.Constant( 0 ) );
 
@@ -48,14 +42,14 @@ namespace HellBrick.Json.Serialization.Providers
 				(
 					Expression.IfThenElse
 					(
-						Expression.LessThan( locals.Index, Expression.Property( parameters.Value, _lengthProperty ) ),
+						Expression.LessThan( locals.Index, Expression.ArrayLength( value ) ),
 						Expression.Block
 						(
 							Expression.Call
 							(
 								locals.ItemSerializer,
 								JsonSerializerMembers<TItem>.Serialize,
-								Expression.ArrayIndex( parameters.Value, locals.Index ), parameters.Writer
+								Expression.ArrayIndex( value, locals.Index ), writer
 							),
 							Expression.PostIncrementAssign( locals.Index )
 						),
@@ -64,7 +58,7 @@ namespace HellBrick.Json.Serialization.Providers
 					loopBreak
 				);
 
-				yield return Expression.Call( parameters.Writer, JsonWriterMembers.WriteEndArray );
+				yield return Expression.Call( writer, JsonWriterMembers.WriteEndArray );
 			}
 
 			private class LocalVariables
