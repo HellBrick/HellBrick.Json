@@ -117,31 +117,12 @@ namespace HellBrick.Json.Deserialization.Providers
 
 			private SwitchCase CreateSwitchCase( PropertyInfo property, Expression reader, LocalVariables locals )
 			{
-				Type jsonDeserializerType = typeof( JsonDeserializer<> ).MakeGenericType( property.PropertyType );
-				MethodInfo deserializeMethod =
-					(
-						from method in jsonDeserializerType.GetTypeInfo().GetDeclaredMethods( nameof( JsonDeserializer<object>.Deserialize ) )
-						let args = method.GetParameters()
-						where args.Length == 1 && args[ 0 ].ParameterType == typeof( JsonReader )
-						select method
-					)
-					.FirstOrDefault();
-
-				Type jsonFactoryMembersType = typeof( JsonFactoryMembers<> ).MakeGenericType( property.PropertyType );
-				FieldInfo deserializerForField = jsonFactoryMembersType.GetTypeInfo().GetDeclaredField( nameof( JsonFactoryMembers<object>.DeserializerFor ) );
-				MethodInfo deserializerFactoryMethod = deserializerForField.GetValue( null ) as MethodInfo;
-
 				return SwitchCase
 				(
 					Assign
 					(
 						Property( locals.Result, property ),
-						Call
-						(
-							Call( null, deserializerFactoryMethod ),
-							deserializeMethod,
-							reader
-						)
+						Deserialize( property.PropertyType, reader )
 					),
 					Constant( property.Name )
 				);
