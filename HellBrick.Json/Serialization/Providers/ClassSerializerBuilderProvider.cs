@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HellBrick.Json.Common;
 using Newtonsoft.Json;
 using static System.Linq.Expressions.Expression;
+using static HellBrick.Json.Serialization.ExpressionFactory;
 
 namespace HellBrick.Json.Serialization.Providers
 {
@@ -55,16 +56,10 @@ namespace HellBrick.Json.Serialization.Providers
 				foreach ( PropertyInfo property in _properties )
 				{
 					yield return Call( writer, JsonWriterMembers.WritePropertyName, Constant( property.Name ) );
-					yield return WritePropertyValueExpression( property, value, writer );
+					yield return Serialize( Property( value, property ), writer );
 				}
 
 				yield return Call( writer, JsonWriterMembers.WriteEndObject );
-			}
-
-			private Expression WritePropertyValueExpression( PropertyInfo property, Expression value, Expression writer )
-			{
-				Expression propertyValue = Property( value, property );
-				return ExpressionFactory.Serialize( propertyValue, writer );
 			}
 		}
 	}
