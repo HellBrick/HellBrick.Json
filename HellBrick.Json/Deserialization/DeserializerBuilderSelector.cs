@@ -12,6 +12,7 @@ namespace HellBrick.Json.Deserialization
 		private static readonly IDeserializerBuilderProvider[] _providers = new IDeserializerBuilderProvider[]
 		{
 			new NullableValueDeserializerBuilderProvider(),
+			new NonNullableValueDeserializerBuilderProvider(),
 			new ArrayDeserializerBuilderProvider(),
 			new CollectionDeserializerBuilderProvider(),
 			new DeserializationOld.DeserializerFactory.Adapter(),
