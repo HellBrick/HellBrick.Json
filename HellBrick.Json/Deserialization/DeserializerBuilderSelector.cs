@@ -13,7 +13,8 @@ namespace HellBrick.Json.Deserialization
 		{
 			new ArrayDeserializerBuilderProvider(),
 			new CollectionDeserializerBuilderProvider(),
-			new DeserializationOld.DeserializerFactory.Adapter()
+			new DeserializationOld.DeserializerFactory.Adapter(),
+			new ClassDeserializerBuilderProvider()
 		};
 
 		public static IDeserializerBuilder<T> SelectBuilder<T>()
