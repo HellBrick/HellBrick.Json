@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace HellBrick.Json.Serialization
 {
-	internal static class SerializerFactory
+	internal static class OldSerializerFactory
 	{
 		private static readonly ISerializerBuilderProvider[] _providers =
 		{
