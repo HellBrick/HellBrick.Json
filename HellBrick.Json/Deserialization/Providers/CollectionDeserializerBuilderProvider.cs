@@ -21,7 +21,9 @@ namespace HellBrick.Json.Deserialization.Providers
 
 			Type collectionType = collectionTypeInfo.EnumerableTypeInfo.CollectionType;
 			Type itemType = collectionTypeInfo.EnumerableTypeInfo.ItemType;
-			Type builderType = typeof( NullableItemCollectionDeserializerBuilder<,> ).MakeGenericType( collectionType, itemType );
+
+			Type builderTypeDefinition = itemType.GetTypeInfo().IsNonNullableValue() ? typeof( NonNullableItemCollectionDeserializerBuilder<,> ) : typeof( NullableItemCollectionDeserializerBuilder<,> );
+			Type builderType = builderTypeDefinition.MakeGenericType( collectionType, itemType );
 			return Activator.CreateInstance( builderType, new object[] { collectionTypeInfo.AddMethod } ) as IDeserializerBuilder<T>;
 		}
 
@@ -100,6 +102,17 @@ namespace HellBrick.Json.Deserialization.Providers
 			}
 
 			protected override Expression UnliftItem( Expression liftedItem ) => liftedItem;
+		}
+
+		private class NonNullableItemCollectionDeserializerBuilder<TCollection, TItem> : CollectionDeserializerBuilder<TCollection, TItem, TItem?> where TItem : struct
+		{
+			private static readonly PropertyInfo _valueProperty = Reflection.Property( ( TItem? lifted ) => lifted.Value );
+
+			public NonNullableItemCollectionDeserializerBuilder( MethodInfo addMethod ) : base( addMethod )
+			{
+			}
+
+			protected override Expression UnliftItem( Expression liftedItem ) => Expression.Property( liftedItem, _valueProperty );
 		}
 	}
 }
