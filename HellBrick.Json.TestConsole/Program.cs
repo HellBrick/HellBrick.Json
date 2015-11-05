@@ -34,9 +34,16 @@ namespace HellBrick.Json.TestConsole
 		{
 			X = x;
 			Y = x.ToString();
+			Sub = new SubClass() { Timestamp = DateTime.UtcNow };
 		}
 
 		public int X { get; set; }
 		public string Y { get; set; }
+		public SubClass Sub { get; set; }
+	}
+
+	class SubClass
+	{
+		public DateTime Timestamp { get; set; }
 	}
 }

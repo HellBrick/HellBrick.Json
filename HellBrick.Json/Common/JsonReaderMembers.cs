@@ -12,5 +12,6 @@ namespace HellBrick.Json.Common
 	internal static class JsonReaderMembers
 	{
 		public static readonly PropertyInfo TokenType = Reflection.Property( ( JsonReader r ) => r.TokenType );
+		public static readonly MethodInfo Read = Reflection.Method( ( JsonReader r ) => r.Read() );
 	}
 }
