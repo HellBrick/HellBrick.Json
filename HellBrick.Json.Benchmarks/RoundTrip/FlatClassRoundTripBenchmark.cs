@@ -4,19 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet;
+using HellBrick.Json.Benchmarks.Common;
 
 namespace HellBrick.Json.Benchmarks.RoundTrip
 {
-	public class FlatClass
-	{
-		public int Number { get; set; }
-		public string Text { get; set; }
-		public DateTime TimeStamp { get; set; }
-	}
-
 	public class FlatClassRoundTripBenchmark
 	{
-		private static readonly RoundTripBenchmarkCore<FlatClass> _core = new RoundTripBenchmarkCore<FlatClass>( new FlatClass() { Number = 42, Text = "64", TimeStamp = DateTime.UtcNow } );
+		private static readonly RoundTripBenchmarkCore<FlatClass> _core = new RoundTripBenchmarkCore<FlatClass>( FlatClass.Create() );
 
 		[Benchmark]
 		public void HellBrickJson() => _core.HellBrickJson();

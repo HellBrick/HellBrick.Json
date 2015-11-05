@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\FlatClass.cs" />
     <Compile Include="RoundTrip\IntArrayRoundTripBenchmark.cs" />
     <Compile Include="RoundTrip\FlatClassRoundTripBenchmark.cs" />
     <Compile Include="Program.cs" />
