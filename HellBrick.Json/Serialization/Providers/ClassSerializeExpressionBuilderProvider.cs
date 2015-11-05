@@ -11,45 +11,57 @@ using static System.Linq.Expressions.Expression;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class ClassSerializerBuilderProvider : ISerializerBuilderProvider
+	internal class ClassSerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
 	{
-		public ISerializerBuilder<T> TryCreateBuilder<T>()
+		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
 		{
 			PropertyInfo[] gettableProperties = EnumerableGettableProperties( typeof( T ) ).ToArray();
 			if ( gettableProperties.Length == 0 )
 				return null;
 
-			return new ClassSerializerBuilder<T>( gettableProperties );
+			return new ClassSerializeExpressionBuilder<T>( gettableProperties );
 		}
 
-		private class ClassSerializerBuilder<T> : ExpressionSerializerBuilder<T>
+		private IEnumerable<PropertyInfo> EnumerableGettableProperties( Type type )
+		{
+			while ( type != null )
+			{
+				TypeInfo typeInfo = type.GetTypeInfo();
+				foreach ( PropertyInfo property in typeInfo.DeclaredProperties.Where( p => p.CanRead && p.GetMethod.IsPublic && p.GetIndexParameters().Length == 0 ) )
+					yield return property;
+
+				type = typeInfo.BaseType;
+			}
+		}
+
+		private class ClassSerializeExpressionBuilder<T> : ISerializeExpressionBuilder<T>
 		{
 			private readonly PropertyInfo[] _properties;
 
-			public ClassSerializerBuilder( PropertyInfo[] properties )
+			public ClassSerializeExpressionBuilder( PropertyInfo[] properties )
 			{
 				_properties = properties;
 			}
 
-			protected override Expression BuildSerializerBody( SerializeParameters<T> parameters )
+			public Expression BuildSerializationExpression( Expression value, Expression writer )
 			{
-				return Block( EnumerateExpressions( parameters ) );
+				return Block( EnumerateExpressions( value, writer ) );
 			}
 
-			private IEnumerable<Expression> EnumerateExpressions( SerializeParameters<T> parameters )
+			private IEnumerable<Expression> EnumerateExpressions( Expression value, Expression writer )
 			{
-				yield return Call( parameters.Writer, JsonWriterMembers.WriteStartObject );
+				yield return Call( writer, JsonWriterMembers.WriteStartObject );
 
 				foreach ( PropertyInfo property in _properties )
 				{
-					yield return Call( parameters.Writer, JsonWriterMembers.WritePropertyName, Constant( property.Name ) );
-					yield return WritePropertyValueExpression( property, parameters );
+					yield return Call( writer, JsonWriterMembers.WritePropertyName, Constant( property.Name ) );
+					yield return WritePropertyValueExpression( property, value, writer );
 				}
 
-				yield return Call( parameters.Writer, JsonWriterMembers.WriteEndObject );
+				yield return Call( writer, JsonWriterMembers.WriteEndObject );
 			}
 
-			private Expression WritePropertyValueExpression( PropertyInfo property, SerializeParameters<T> parameters )
+			private Expression WritePropertyValueExpression( PropertyInfo property, Expression value, Expression writer )
 			{
 				Type jsonSerializerType = typeof( JsonSerializer<> ).MakeGenericType( property.PropertyType );
 				MethodInfo serializeMethod =
@@ -69,20 +81,8 @@ namespace HellBrick.Json.Serialization.Providers
 				(
 					Call( null, serializerFactoryMethod ),
 					serializeMethod,
-					Property( parameters.Value, property ), parameters.Writer
+					Property( value, property ), writer
 				);
-			}
-		}
-
-		private IEnumerable<PropertyInfo> EnumerableGettableProperties( Type type )
-		{
-			while ( type != null )
-			{
-				TypeInfo typeInfo = type.GetTypeInfo();
-				foreach ( PropertyInfo property in typeInfo.DeclaredProperties.Where( p => p.CanRead && p.GetMethod.IsPublic && p.GetIndexParameters().Length == 0 ) )
-					yield return property;
-
-				type = typeInfo.BaseType;
 			}
 		}
 	}

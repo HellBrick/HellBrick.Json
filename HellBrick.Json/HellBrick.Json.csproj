@@ -53,7 +53,7 @@
     <Compile Include="Serialization\ISerializeExpressionBuilderProvider.cs" />
     <Compile Include="Serialization\ISerializerBuilder.cs" />
     <Compile Include="Serialization\Providers\ArraySerializerBuilderProvider.cs" />
-    <Compile Include="Serialization\Providers\ClassSerializerBuilderProvider.cs" />
+    <Compile Include="Serialization\Providers\ClassSerializeExpressionBuilderProvider.cs" />
     <Compile Include="Serialization\Providers\CollectionSerializerBuilderProvider.cs" />
     <Compile Include="Serialization\Providers\ValueSerializeExpressionBuilderProvider.cs" />
     <Compile Include="Serialization\SerializeExpressionBuilderSelector.cs" />

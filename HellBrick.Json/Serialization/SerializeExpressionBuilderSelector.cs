@@ -13,7 +13,8 @@ namespace HellBrick.Json.Serialization
 		private static readonly ISerializeExpressionBuilderProvider[] _providers = new ISerializeExpressionBuilderProvider[]
 		{
 			new ValueSerializeExpressionBuilderProvider(),
-			new OldSerializerFactory.Adapter()
+			new OldSerializerFactory.Adapter(),
+			new ClassSerializeExpressionBuilderProvider()
 		};
 
 		public static ISerializeExpressionBuilder<T> SelectBuilder<T>()
