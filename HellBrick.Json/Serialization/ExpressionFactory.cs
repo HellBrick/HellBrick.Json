@@ -5,20 +5,27 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using HellBrick.Json.Utils;
 
 namespace HellBrick.Json.Serialization
 {
 	internal static class ExpressionFactory
 	{
+		private static readonly MethodInfo _serializeInternalDefinition = Reflection
+			.Method( () => SerializeGeneric<int>( default( Expression ), default( Expression ) ) )
+			.GetGenericMethodDefinition();
+
 		public static Expression Serialize( Expression value, Expression writer )
 		{
-			MethodInfo selectBuilderDefinition = typeof( SerializerBuilderSelector ).GetTypeInfo().GetDeclaredMethod( "SelectBuilder" );
-			MethodInfo selectBuilderMethod = selectBuilderDefinition.GetGenericMethodDefinition().MakeGenericMethod( value.Type );
-			object builder = selectBuilderMethod.Invoke( null, new object[ 0 ] );
+			MethodInfo serializeInternalMethod = _serializeInternalDefinition.MakeGenericMethod( value.Type );
+			Expression expression = serializeInternalMethod.Invoke( null, new object[] { value, writer } ) as Expression;
+			return expression;
+		}
 
-			MethodInfo buildMethod = builder.GetType().GetTypeInfo().GetDeclaredMethod( nameof( ISerializerBuilder<int>.BuildSerializationExpression ) );
-			object boxedExpression = buildMethod.Invoke( builder, new object[] { value, writer } );
-			Expression expression = (Expression) boxedExpression;
+		private static Expression SerializeGeneric<T>( Expression value, Expression writer )
+		{
+			ISerializerBuilder<T> builder = SerializerBuilderSelector.SelectBuilder<T>();
+			Expression expression = builder.BuildSerializationExpression( value, writer );
 			return expression;
 		}
 	}
