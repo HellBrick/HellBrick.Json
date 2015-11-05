@@ -33,7 +33,6 @@ namespace HellBrick.Json.Serialization.Providers
 			private IEnumerable<Expression> EnumerateExpressions( Expression value, Expression writer, LocalVariables locals )
 			{
 				yield return Expression.Call( writer, JsonWriterMembers.WriteStartArray );
-				yield return Expression.Assign( locals.ItemSerializer, Expression.Call( null, JsonFactoryMembers<TItem>.SerializerFor ) );
 				yield return Expression.Assign( locals.Index, Expression.Constant( 0 ) );
 
 				LabelTarget loopBreak = Expression.Label( "loopBreak" );
@@ -45,12 +44,7 @@ namespace HellBrick.Json.Serialization.Providers
 						Expression.LessThan( locals.Index, Expression.ArrayLength( value ) ),
 						Expression.Block
 						(
-							Expression.Call
-							(
-								locals.ItemSerializer,
-								JsonSerializerMembers<TItem>.Serialize,
-								Expression.ArrayIndex( value, locals.Index ), writer
-							),
+							SerializeExpressionFactory.BuildSerializationExpression( Expression.ArrayIndex( value, locals.Index ), writer ),
 							Expression.PostIncrementAssign( locals.Index )
 						),
 						Expression.Break( loopBreak )
@@ -65,13 +59,11 @@ namespace HellBrick.Json.Serialization.Providers
 			{
 				public LocalVariables()
 				{
-					ItemSerializer = Expression.Parameter( typeof( JsonSerializer<TItem> ), "itemSerializer" );
 					Index = Expression.Parameter( typeof( int ), "i" );
-					Variables = new ParameterExpression[] { ItemSerializer, Index };
+					Variables = new ParameterExpression[] { Index };
 				}
 
 				public ParameterExpression Index { get; }
-				public ParameterExpression ItemSerializer { get; }
 				public IEnumerable<ParameterExpression> Variables { get; }
 			}
 		}
