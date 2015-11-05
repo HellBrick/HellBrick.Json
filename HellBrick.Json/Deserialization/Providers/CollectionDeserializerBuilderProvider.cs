@@ -29,8 +29,6 @@ namespace HellBrick.Json.Deserialization.Providers
 
 		private abstract class CollectionDeserializerBuilder<TCollection, TItem, TLiftedItem> : ExpressionDeserializerBuilder<TCollection>
 		{
-			private static readonly MethodInfo _readMethod = Reflection.Method( ( JsonReader r ) => r.Read() );
-
 			private readonly MethodInfo _addMethod;
 
 			public CollectionDeserializerBuilder( MethodInfo addMethod )
@@ -54,7 +52,7 @@ namespace HellBrick.Json.Deserialization.Providers
 
 				yield return Expression.IfThen
 				(
-					Expression.Call( parameters.Reader, _readMethod ),
+					Expression.Call( parameters.Reader, JsonReaderMembers.Read ),
 					Expression.Loop
 					(
 						Expression.Block
