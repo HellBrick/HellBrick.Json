@@ -13,5 +13,8 @@ namespace HellBrick.Json.Common
 	{
 		public static readonly MethodInfo WriteStartArray = Reflection.Method( ( JsonWriter w ) => w.WriteStartArray() );
 		public static readonly MethodInfo WriteEndArray = Reflection.Method( ( JsonWriter w ) => w.WriteEndArray() );
+		public static readonly MethodInfo WriteStartObject = Reflection.Method( ( JsonWriter w ) => w.WriteStartObject() );
+		public static readonly MethodInfo WriteEndObject = Reflection.Method( ( JsonWriter w ) => w.WriteEndObject() );
+		public static readonly MethodInfo WritePropertyName = Reflection.Method( ( JsonWriter w ) => w.WritePropertyName( default( string ) ) );
 	}
 }
