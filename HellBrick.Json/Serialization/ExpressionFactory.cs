@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace HellBrick.Json.Serialization
 {
-	internal static class SerializeExpressionFactory
+	internal static class ExpressionFactory
 	{
-		public static Expression BuildSerializationExpression( Expression value, Expression writer )
+		public static Expression Serialize( Expression value, Expression writer )
 		{
 			MethodInfo selectBuilderDefinition = typeof( SerializerBuilderSelector ).GetTypeInfo().GetDeclaredMethod( "SelectBuilder" );
 			MethodInfo selectBuilderMethod = selectBuilderDefinition.GetGenericMethodDefinition().MakeGenericMethod( value.Type );

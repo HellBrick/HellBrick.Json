@@ -48,7 +48,7 @@ namespace HellBrick.Json.Serialization.Providers
 					Expression.IfThenElse
 					(
 						Expression.Call( locals.Enumerator, _enumerableTypeInfo.MoveNextMethod ),
-						SerializeExpressionFactory.BuildSerializationExpression( Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), writer ),
+						ExpressionFactory.Serialize( Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), writer ),
 						Expression.Break( loopBreak )
 					),
 					loopBreak

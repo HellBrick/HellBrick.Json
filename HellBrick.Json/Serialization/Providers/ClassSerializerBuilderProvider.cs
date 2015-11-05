@@ -64,7 +64,7 @@ namespace HellBrick.Json.Serialization.Providers
 			private Expression WritePropertyValueExpression( PropertyInfo property, Expression value, Expression writer )
 			{
 				Expression propertyValue = Property( value, property );
-				return SerializeExpressionFactory.BuildSerializationExpression( propertyValue, writer );
+				return ExpressionFactory.Serialize( propertyValue, writer );
 			}
 		}
 	}

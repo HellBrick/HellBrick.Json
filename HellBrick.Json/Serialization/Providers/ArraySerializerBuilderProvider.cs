@@ -44,7 +44,7 @@ namespace HellBrick.Json.Serialization.Providers
 						Expression.LessThan( locals.Index, Expression.ArrayLength( value ) ),
 						Expression.Block
 						(
-							SerializeExpressionFactory.BuildSerializationExpression( Expression.ArrayIndex( value, locals.Index ), writer ),
+							ExpressionFactory.Serialize( Expression.ArrayIndex( value, locals.Index ), writer ),
 							Expression.PostIncrementAssign( locals.Index )
 						),
 						Expression.Break( loopBreak )
