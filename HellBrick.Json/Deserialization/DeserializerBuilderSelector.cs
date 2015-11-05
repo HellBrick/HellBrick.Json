@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HellBrick.Json.Deserialization.Providers;
 
 namespace HellBrick.Json.Deserialization
 {
@@ -10,6 +11,7 @@ namespace HellBrick.Json.Deserialization
 	{
 		private static readonly IDeserializerBuilderProvider[] _providers = new IDeserializerBuilderProvider[]
 		{
+			new CollectionDeserializerBuilderProvider(),
 			new DeserializationOld.DeserializerFactory.Adapter()
 		};
 
