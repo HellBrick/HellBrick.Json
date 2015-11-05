@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HellBrick.Json.Serialization
 {
-	internal interface ISerializeExpressionBuilder<T>
+	internal interface ISerializerBuilder<T>
 	{
 		Expression BuildSerializationExpression( Expression value, Expression writer );
 	}

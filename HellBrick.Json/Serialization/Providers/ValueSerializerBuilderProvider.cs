@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class ValueSerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
+	internal class ValueSerializerBuilderProvider : ISerializerBuilderProvider
 	{
 		private readonly Dictionary<Type, MethodInfo> _writeValueMethods =
 			(
@@ -23,17 +23,17 @@ namespace HellBrick.Json.Serialization.Providers
 			)
 			.ToDictionary( p => p.ParameterType, m => m.Method );
 
-		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
+		public ISerializerBuilder<T> TryCreateBuilder<T>()
 		{
 			MethodInfo writeMethod = _writeValueMethods.GetOrDefault( typeof( T ) );
-			return writeMethod != null ? new ValueSerializeExpressionBuilder<T>( writeMethod ) : null;
+			return writeMethod != null ? new ValueSerializerBuilder<T>( writeMethod ) : null;
 		}
 
-		private class ValueSerializeExpressionBuilder<T> : ISerializeExpressionBuilder<T>
+		private class ValueSerializerBuilder<T> : ISerializerBuilder<T>
 		{
 			private readonly MethodInfo _writeMethod;
 
-			public ValueSerializeExpressionBuilder( MethodInfo writeMethod )
+			public ValueSerializerBuilder( MethodInfo writeMethod )
 			{
 				_writeMethod = writeMethod;
 			}

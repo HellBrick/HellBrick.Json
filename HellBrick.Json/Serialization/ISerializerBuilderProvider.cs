@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace HellBrick.Json.Serialization
 {
-	internal interface ISerializeExpressionBuilderProvider
+	internal interface ISerializerBuilderProvider
 	{
-		ISerializeExpressionBuilder<T> TryCreateBuilder<T>();
+		ISerializerBuilder<T> TryCreateBuilder<T>();
 	}
 }

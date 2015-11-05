@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 using HellBrick.Json.Common;
 using Newtonsoft.Json;
 using static System.Linq.Expressions.Expression;
+using static HellBrick.Json.Serialization.ExpressionFactory;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class ClassSerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
+	internal class ClassSerializerBuilderProvider : ISerializerBuilderProvider
 	{
-		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
+		public ISerializerBuilder<T> TryCreateBuilder<T>()
 		{
 			PropertyInfo[] gettableProperties = EnumerableGettableProperties( typeof( T ) ).ToArray();
 			if ( gettableProperties.Length == 0 )
 				return null;
 
-			return new ClassSerializeExpressionBuilder<T>( gettableProperties );
+			return new ClassSerializerBuilder<T>( gettableProperties );
 		}
 
 		private IEnumerable<PropertyInfo> EnumerableGettableProperties( Type type )
@@ -34,11 +35,11 @@ namespace HellBrick.Json.Serialization.Providers
 			}
 		}
 
-		private class ClassSerializeExpressionBuilder<T> : ISerializeExpressionBuilder<T>
+		private class ClassSerializerBuilder<T> : ISerializerBuilder<T>
 		{
 			private readonly PropertyInfo[] _properties;
 
-			public ClassSerializeExpressionBuilder( PropertyInfo[] properties )
+			public ClassSerializerBuilder( PropertyInfo[] properties )
 			{
 				_properties = properties;
 			}
@@ -55,16 +56,10 @@ namespace HellBrick.Json.Serialization.Providers
 				foreach ( PropertyInfo property in _properties )
 				{
 					yield return Call( writer, JsonWriterMembers.WritePropertyName, Constant( property.Name ) );
-					yield return WritePropertyValueExpression( property, value, writer );
+					yield return Serialize( Property( value, property ), writer );
 				}
 
 				yield return Call( writer, JsonWriterMembers.WriteEndObject );
-			}
-
-			private Expression WritePropertyValueExpression( PropertyInfo property, Expression value, Expression writer )
-			{
-				Expression propertyValue = Property( value, property );
-				return SerializeExpressionFactory.BuildSerializationExpression( propertyValue, writer );
 			}
 		}
 	}

@@ -8,24 +8,24 @@ using HellBrick.Json.Common;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class CollectionSerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
+	internal class CollectionSerializerBuilderProvider : ISerializerBuilderProvider
 	{
-		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
+		public ISerializerBuilder<T> TryCreateBuilder<T>()
 		{
 			EnumerableTypeInfo enumerableTypeInfo = EnumerableTypeInfo.TryCreate( typeof( T ) );
 			if ( enumerableTypeInfo == null )
 				return null;
 
-			Type builderType = typeof( CollectionSerializeExpressionBuilder<,> ).MakeGenericType( enumerableTypeInfo.CollectionType, enumerableTypeInfo.ItemType );
-			ISerializeExpressionBuilder<T> builder = Activator.CreateInstance( builderType, new object[] { enumerableTypeInfo } ) as ISerializeExpressionBuilder<T>;
+			Type builderType = typeof( CollectionSerializerBuilder<,> ).MakeGenericType( enumerableTypeInfo.CollectionType, enumerableTypeInfo.ItemType );
+			ISerializerBuilder<T> builder = Activator.CreateInstance( builderType, new object[] { enumerableTypeInfo } ) as ISerializerBuilder<T>;
 			return builder;
 		}
 
-		private class CollectionSerializeExpressionBuilder<TCollection, TItem> : ISerializeExpressionBuilder<TCollection>
+		private class CollectionSerializerBuilder<TCollection, TItem> : ISerializerBuilder<TCollection>
 		{
 			private readonly EnumerableTypeInfo _enumerableTypeInfo;
 
-			public CollectionSerializeExpressionBuilder( EnumerableTypeInfo enumerableTypeInfo )
+			public CollectionSerializerBuilder( EnumerableTypeInfo enumerableTypeInfo )
 			{
 				_enumerableTypeInfo = enumerableTypeInfo;
 			}
@@ -48,7 +48,7 @@ namespace HellBrick.Json.Serialization.Providers
 					Expression.IfThenElse
 					(
 						Expression.Call( locals.Enumerator, _enumerableTypeInfo.MoveNextMethod ),
-						SerializeExpressionFactory.BuildSerializationExpression( Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), writer ),
+						ExpressionFactory.Serialize( Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), writer ),
 						Expression.Break( loopBreak )
 					),
 					loopBreak

@@ -10,19 +10,19 @@ using HellBrick.Json.Utils;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class ArraySerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
+	internal class ArraySerializerBuilderProvider : ISerializerBuilderProvider
 	{
-		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
+		public ISerializerBuilder<T> TryCreateBuilder<T>()
 		{
 			Type arrayType = typeof( T );
 			if ( !arrayType.IsArray || arrayType.GetArrayRank() != 1 )
 				return null;
 
 			Type itemType = arrayType.GetElementType();
-			return Activator.CreateInstance( typeof( ArraySerializeExpressionBuilder<> ).MakeGenericType( itemType ) ) as ISerializeExpressionBuilder<T>;
+			return Activator.CreateInstance( typeof( ArraySerializerBuilder<> ).MakeGenericType( itemType ) ) as ISerializerBuilder<T>;
 		}
 
-		private class ArraySerializeExpressionBuilder<TItem> : ISerializeExpressionBuilder<TItem[]>
+		private class ArraySerializerBuilder<TItem> : ISerializerBuilder<TItem[]>
 		{
 			public Expression BuildSerializationExpression( Expression value, Expression writer )
 			{
@@ -44,7 +44,7 @@ namespace HellBrick.Json.Serialization.Providers
 						Expression.LessThan( locals.Index, Expression.ArrayLength( value ) ),
 						Expression.Block
 						(
-							SerializeExpressionFactory.BuildSerializationExpression( Expression.ArrayIndex( value, locals.Index ), writer ),
+							ExpressionFactory.Serialize( Expression.ArrayIndex( value, locals.Index ), writer ),
 							Expression.PostIncrementAssign( locals.Index )
 						),
 						Expression.Break( loopBreak )
