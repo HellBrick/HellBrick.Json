@@ -40,10 +40,6 @@
     <Compile Include="Common\JsonReaderMembers.cs" />
     <Compile Include="Common\JsonSerializerMembers.cs" />
     <Compile Include="Common\JsonWriterMembers.cs" />
-    <Compile Include="DeserializationOld\DeserializerFactory.cs" />
-    <Compile Include="DeserializationOld\IDeserializerBuilderProvider.cs" />
-    <Compile Include="DeserializationOld\Providers\NonNullableValueDeserializerBuilderProvider.cs" />
-    <Compile Include="DeserializationOld\RelayDeserializerBuilder.cs" />
     <Compile Include="Deserialization\DeserializerBuilderSelector.cs" />
     <Compile Include="Deserialization\DeserializerFactory.cs" />
     <Compile Include="Deserialization\ExpressionFactory.cs" />
@@ -63,9 +59,6 @@
     <Compile Include="Serialization\Providers\ValueSerializerBuilderProvider.cs" />
     <Compile Include="Serialization\SerializerBuilderSelector.cs" />
     <Compile Include="Common\CollectionTypeInfo.cs" />
-    <Compile Include="DeserializationOld\ExpressionDeserializerBuilder.cs" />
-    <Compile Include="DeserializationOld\IDeserializerBuilder.cs" />
-    <Compile Include="DeserializationOld\DeserializeParameters.cs" />
     <Compile Include="Serialization\ExpressionFactory.cs" />
     <Compile Include="JsonDeserializer.cs" />
     <Compile Include="JsonFactory.cs" />
