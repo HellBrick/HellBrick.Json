@@ -15,7 +15,6 @@ namespace HellBrick.Json.Serialization
 			new ValueSerializeExpressionBuilderProvider(),
 			new ArraySerializeExpressionBuilderProvider(),
 			new CollectionSerializeExpressionBuilderProvider(),
-			new OldSerializerFactory.Adapter(),
 			new ClassSerializeExpressionBuilderProvider()
 		};
 
