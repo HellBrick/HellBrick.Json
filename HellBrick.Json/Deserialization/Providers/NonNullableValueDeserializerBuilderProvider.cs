@@ -21,7 +21,7 @@ namespace HellBrick.Json.Deserialization.Providers
 
 		private class NonNullableValueDeserializerBuilder<T> : RelayDeserializerBuilder<T, T?> where T : struct
 		{
-			public NonNullableValueDeserializerBuilder() : base( nullable => nullable.GetValueOrDefault() )
+			public NonNullableValueDeserializerBuilder() : base( nullable => nullable.Value )
 			{
 			}
 		}
