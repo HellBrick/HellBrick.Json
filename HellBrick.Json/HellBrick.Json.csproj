@@ -63,6 +63,7 @@
     <Compile Include="Serialization\ISerializerBuilderProvider.cs" />
     <Compile Include="Deserialization\IDeserializerBuilder.cs" />
     <Compile Include="Deserialization\DeserializeParameters.cs" />
+    <Compile Include="Serialization\SerializeExpressionFactory.cs" />
     <Compile Include="Serialization\SerializeParameters.cs" />
     <Compile Include="JsonDeserializer.cs" />
     <Compile Include="JsonFactory.cs" />
