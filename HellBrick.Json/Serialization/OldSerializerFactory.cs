@@ -16,7 +16,6 @@ namespace HellBrick.Json.Serialization
 	{
 		private static readonly ISerializerBuilderProvider[] _providers =
 		{
-			new ValueSerializerBuilderProvider(),
 			new ArraySerializerBuilderProvider(),
 			new CollectionSerializerBuilderProvider(),
 			new ClassSerializerBuilderProvider()
