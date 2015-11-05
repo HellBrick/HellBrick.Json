@@ -48,7 +48,6 @@ namespace HellBrick.Json.Deserialization.Providers
 				LabelTarget loopBreak = Expression.Label( "loopBreak" );
 
 				yield return Expression.Assign( locals.Collection, Expression.New( typeof( TCollection ) ) );
-				yield return Expression.Assign( locals.ItemDeserializer, Expression.Call( null, JsonFactoryMembers<TLiftedItem>.DeserializerFor ) );
 
 				yield return Expression.IfThen
 				(
@@ -57,7 +56,7 @@ namespace HellBrick.Json.Deserialization.Providers
 					(
 						Expression.Block
 						(
-							Expression.Assign( locals.Item, Expression.Call( locals.ItemDeserializer, JsonDeserializerMembers<TLiftedItem>.Deserialize, reader ) ),
+							Expression.Assign( locals.Item, ExpressionFactory.Deserialize( typeof( TLiftedItem ), reader ) ),
 							Expression.IfThenElse
 							(
 								Expression.NotEqual( Expression.Property( reader, JsonReaderMembers.TokenType ), Expression.Constant( JsonToken.EndArray ) ),
@@ -78,14 +77,12 @@ namespace HellBrick.Json.Deserialization.Providers
 			{
 				public DeserializeLocalVariables()
 				{
-					ItemDeserializer = Expression.Parameter( typeof( JsonDeserializer<TLiftedItem> ), "itemDeserializer" );
 					Collection = Expression.Parameter( typeof( TCollection ), "collection" );
 					Item = Expression.Parameter( typeof( TLiftedItem ), "item" );
 
-					Variables = new ParameterExpression[] { ItemDeserializer, Collection, Item };
+					Variables = new ParameterExpression[] { Collection, Item };
 				}
 
-				public ParameterExpression ItemDeserializer { get; }
 				public ParameterExpression Collection { get; }
 				public ParameterExpression Item { get; }
 
