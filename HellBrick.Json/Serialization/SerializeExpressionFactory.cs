@@ -12,11 +12,11 @@ namespace HellBrick.Json.Serialization
 	{
 		public static Expression BuildSerializationExpression( Expression value, Expression writer )
 		{
-			MethodInfo selectBuilderDefinition = typeof( SerializeExpressionBuilderSelector ).GetTypeInfo().GetDeclaredMethod( "SelectBuilder" );
+			MethodInfo selectBuilderDefinition = typeof( SerializerBuilderSelector ).GetTypeInfo().GetDeclaredMethod( "SelectBuilder" );
 			MethodInfo selectBuilderMethod = selectBuilderDefinition.GetGenericMethodDefinition().MakeGenericMethod( value.Type );
 			object builder = selectBuilderMethod.Invoke( null, new object[ 0 ] );
 
-			MethodInfo buildMethod = builder.GetType().GetTypeInfo().GetDeclaredMethod( nameof( ISerializeExpressionBuilder<int>.BuildSerializationExpression ) );
+			MethodInfo buildMethod = builder.GetType().GetTypeInfo().GetDeclaredMethod( nameof( ISerializerBuilder<int>.BuildSerializationExpression ) );
 			object boxedExpression = buildMethod.Invoke( builder, new object[] { value, writer } );
 			Expression expression = (Expression) boxedExpression;
 			return expression;

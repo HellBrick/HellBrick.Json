@@ -12,7 +12,7 @@ namespace HellBrick.Json.Serialization
 	{
 		public static JsonSerializer<T> CreateSerializer<T>()
 		{
-			ISerializeExpressionBuilder<T> builder = SerializeExpressionBuilderSelector.SelectBuilder<T>();
+			ISerializerBuilder<T> builder = SerializerBuilderSelector.SelectBuilder<T>();
 			SerializeParameters<T> parameters = new SerializeParameters<T>();
 			Expression serializationBody = builder.BuildSerializationExpression( parameters.Value, parameters.Writer );
 			Expression<Action<T, JsonWriter>> lambda = Expression.Lambda<Action<T, JsonWriter>>( serializationBody, parameters.Parameters );

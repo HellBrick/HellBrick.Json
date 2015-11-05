@@ -11,15 +11,15 @@ using static System.Linq.Expressions.Expression;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class ClassSerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
+	internal class ClassSerializerBuilderProvider : ISerializerBuilderProvider
 	{
-		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
+		public ISerializerBuilder<T> TryCreateBuilder<T>()
 		{
 			PropertyInfo[] gettableProperties = EnumerableGettableProperties( typeof( T ) ).ToArray();
 			if ( gettableProperties.Length == 0 )
 				return null;
 
-			return new ClassSerializeExpressionBuilder<T>( gettableProperties );
+			return new ClassSerializerBuilder<T>( gettableProperties );
 		}
 
 		private IEnumerable<PropertyInfo> EnumerableGettableProperties( Type type )
@@ -34,11 +34,11 @@ namespace HellBrick.Json.Serialization.Providers
 			}
 		}
 
-		private class ClassSerializeExpressionBuilder<T> : ISerializeExpressionBuilder<T>
+		private class ClassSerializerBuilder<T> : ISerializerBuilder<T>
 		{
 			private readonly PropertyInfo[] _properties;
 
-			public ClassSerializeExpressionBuilder( PropertyInfo[] properties )
+			public ClassSerializerBuilder( PropertyInfo[] properties )
 			{
 				_properties = properties;
 			}
