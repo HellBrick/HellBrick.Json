@@ -13,14 +13,30 @@ namespace HellBrick.Json.TestConsole
 	{
 		static void Main( string[] args )
 		{
-			int[] list = { 42, 64, 128 };
+			Whatever[] list = { new Whatever( 42 ), new Whatever( 64 ), new Whatever( 128 ) };
 
 			for ( int i = 0; i < 2; i++ )
 			{
-				string text = JsonFactory.SerializerFor<int[]>().Serialize( list );
+				string text = JsonFactory.SerializerFor<Whatever[]>().Serialize( list );
 				Console.WriteLine( text );
-				list = JsonFactory.DeserializerFor<int[]>().Deserialize( text );
+				list = JsonFactory.DeserializerFor<Whatever[]>().Deserialize( text );
 			}
 		}
+	}
+
+	class Whatever
+	{
+		public Whatever()
+		{
+		}
+
+		public Whatever( int x )
+		{
+			X = x;
+			Y = x.ToString();
+		}
+
+		public int X { get; set; }
+		public string Y { get; set; }
 	}
 }
