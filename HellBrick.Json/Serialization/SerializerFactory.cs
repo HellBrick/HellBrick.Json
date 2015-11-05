@@ -15,8 +15,7 @@ namespace HellBrick.Json.Serialization
 			ParameterExpression value = Expression.Parameter( typeof( T ), "value" );
 			ParameterExpression writer = Expression.Parameter( typeof( JsonWriter ), "writer" );
 
-			ISerializerBuilder<T> builder = SerializerBuilderSelector.SelectBuilder<T>();
-			Expression serializationBody = builder.BuildSerializationExpression( value, writer );
+			Expression serializationBody = ExpressionFactory.Serialize( value, writer );
 			Expression<Action<T, JsonWriter>> lambda = Expression.Lambda<Action<T, JsonWriter>>( serializationBody, value, writer );
 			Action<T, JsonWriter> serializationMethod = lambda.Compile();
 			return new JsonSerializer<T>( serializationMethod );
