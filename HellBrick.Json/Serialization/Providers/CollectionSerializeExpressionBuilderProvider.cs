@@ -2,48 +2,45 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HellBrick.Json.Common;
-using HellBrick.Json.Utils;
-using Newtonsoft.Json;
 
 namespace HellBrick.Json.Serialization.Providers
 {
-	internal class CollectionSerializerBuilderProvider : ISerializerBuilderProvider
+	internal class CollectionSerializeExpressionBuilderProvider : ISerializeExpressionBuilderProvider
 	{
-		public ISerializerBuilder<T> TryCreateBuilder<T>()
+		public ISerializeExpressionBuilder<T> TryCreateBuilder<T>()
 		{
 			EnumerableTypeInfo enumerableTypeInfo = EnumerableTypeInfo.TryCreate( typeof( T ) );
 			if ( enumerableTypeInfo == null )
 				return null;
 
-			Type builderType = typeof( CollectionSerializerBuilder<,> ).MakeGenericType( enumerableTypeInfo.CollectionType, enumerableTypeInfo.ItemType );
-			ISerializerBuilder<T> builder = Activator.CreateInstance( builderType, new object[] { enumerableTypeInfo } ) as ISerializerBuilder<T>;
+			Type builderType = typeof( CollectionSerializeExpressionBuilder<,> ).MakeGenericType( enumerableTypeInfo.CollectionType, enumerableTypeInfo.ItemType );
+			ISerializeExpressionBuilder<T> builder = Activator.CreateInstance( builderType, new object[] { enumerableTypeInfo } ) as ISerializeExpressionBuilder<T>;
 			return builder;
 		}
 
-		private class CollectionSerializerBuilder<TCollection, TItem> : ExpressionSerializerBuilder<TCollection>
+		private class CollectionSerializeExpressionBuilder<TCollection, TItem> : ISerializeExpressionBuilder<TCollection>
 		{
 			private readonly EnumerableTypeInfo _enumerableTypeInfo;
 
-			public CollectionSerializerBuilder( EnumerableTypeInfo enumerableTypeInfo )
+			public CollectionSerializeExpressionBuilder( EnumerableTypeInfo enumerableTypeInfo )
 			{
 				_enumerableTypeInfo = enumerableTypeInfo;
 			}
 
-			protected override Expression BuildSerializerBody( SerializeParameters<TCollection> parameters )
+			public Expression BuildSerializationExpression( Expression value, Expression writer )
 			{
 				LocalVariables locals = new LocalVariables( _enumerableTypeInfo );
-				return Expression.Block( locals.Variables, EnumerateSerializerExpressions( parameters, locals ) );
+				return Expression.Block( locals.Variables, EnumerateSerializerExpressions( value, writer, locals ) );
 			}
 
-			private IEnumerable<Expression> EnumerateSerializerExpressions( SerializeParameters<TCollection> parameters, LocalVariables locals )
+			private IEnumerable<Expression> EnumerateSerializerExpressions( Expression value, Expression writer, LocalVariables locals )
 			{
-				yield return Expression.Call( parameters.Writer, JsonWriterMembers.WriteStartArray );
+				yield return Expression.Call( writer, JsonWriterMembers.WriteStartArray );
 				yield return Expression.Assign( locals.ItemSerializer, Expression.Call( null, JsonFactoryMembers<TItem>.SerializerFor ) );
-				yield return Expression.Assign( locals.Enumerator, Expression.Call( parameters.Value, _enumerableTypeInfo.GetEnumeratorMethod ) );
+				yield return Expression.Assign( locals.Enumerator, Expression.Call( value, _enumerableTypeInfo.GetEnumeratorMethod ) );
 
 				LabelTarget loopBreak = Expression.Label( "loopBreak" );
 
@@ -56,14 +53,14 @@ namespace HellBrick.Json.Serialization.Providers
 						(
 							locals.ItemSerializer,
 							JsonSerializerMembers<TItem>.Serialize,
-							Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), parameters.Writer
+							Expression.Property( locals.Enumerator, _enumerableTypeInfo.CurrentProperty ), writer
 						),
 						Expression.Break( loopBreak )
 					),
 					loopBreak
 				);
 
-				yield return Expression.Call( parameters.Writer, JsonWriterMembers.WriteEndArray );
+				yield return Expression.Call( writer, JsonWriterMembers.WriteEndArray );
 			}
 
 			private class LocalVariables
