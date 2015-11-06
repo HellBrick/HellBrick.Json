@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellBrick.Json.TestConsole"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellBrick.Json.Benchmarks", "HellBrick.Json.Benchmarks\HellBrick.Json.Benchmarks.csproj", "{147D9F4A-771F-4E16-97D0-E991AB3D87D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellBrick.Json.Test", "HellBrick.Json.Test\HellBrick.Json.Test.csproj", "{FEBE6C27-42DF-41F3-B264-2E1E886F96EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{147D9F4A-771F-4E16-97D0-E991AB3D87D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{147D9F4A-771F-4E16-97D0-E991AB3D87D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{147D9F4A-771F-4E16-97D0-E991AB3D87D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEBE6C27-42DF-41F3-B264-2E1E886F96EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEBE6C27-42DF-41F3-B264-2E1E886F96EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEBE6C27-42DF-41F3-B264-2E1E886F96EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEBE6C27-42DF-41F3-B264-2E1E886F96EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
