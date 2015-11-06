@@ -31,5 +31,28 @@ namespace HellBrick.Json.Deserialization.Providers
 
 
 		public IDeserializerBuilder<T> TryCreateBuilder<T>() => _builderLookup.GetOrDefault( typeof( T ) ) as IDeserializerBuilder<T>;
+
+		private class BooleanDeserializerBuilder : RelayDeserializerBuilder<bool?, string>
+		{
+			protected override Expression ConvertToOuter( Expression inner )
+			{
+				ParameterExpression text = Parameter( typeof( string ) );
+				return Block
+				(
+					new ParameterExpression[] { text },
+					Assign( text, inner ),
+					Condition
+					(
+						Equal( text, Constant( null, typeof( string ) ) ),
+						Default( typeof( bool? ) ),
+						Convert
+						(
+							Call( null, Reflection.Method( () => Boolean.Parse( default( string ) ) ), text ),
+							typeof( bool? )
+						)
+					)
+				);
+			}
+		}
 	}
 }
