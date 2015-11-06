@@ -48,6 +48,7 @@
     <Compile Include="Deserialization\Providers\ArrayDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\ClassDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\CollectionDeserializerBuilderProvider.cs" />
+    <Compile Include="Deserialization\Providers\Int64DeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\NonNullableValueDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\NullableValueDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\StringParsingDeserializerBuilderProvider.cs" />

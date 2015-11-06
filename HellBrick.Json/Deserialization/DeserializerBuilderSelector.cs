@@ -13,6 +13,7 @@ namespace HellBrick.Json.Deserialization
 		{
 			new NullableValueDeserializerBuilderProvider(),
 			new NonNullableValueDeserializerBuilderProvider(),
+			new Int64DeserializerBuilderProvider(),
 			new StringParsingDeserializerBuilderProvider(),
 			new ArrayDeserializerBuilderProvider(),
 			new CollectionDeserializerBuilderProvider(),
