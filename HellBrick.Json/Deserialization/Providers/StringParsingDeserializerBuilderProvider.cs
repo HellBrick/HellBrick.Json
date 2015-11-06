@@ -32,9 +32,9 @@ namespace HellBrick.Json.Deserialization.Providers
 
 		public IDeserializerBuilder<T> TryCreateBuilder<T>() => _builderLookup.GetOrDefault( typeof( T ) ) as IDeserializerBuilder<T>;
 
-		private class BooleanDeserializerBuilder : RelayDeserializerBuilder<bool?, string>
+		private abstract class StringParsingDeserializerBuilder<T> : RelayDeserializerBuilder<T, string>
 		{
-			protected override Expression ConvertToOuter( Expression inner )
+			protected sealed override Expression ConvertToOuter( Expression inner )
 			{
 				ParameterExpression text = Parameter( typeof( string ) );
 				return Block
@@ -44,15 +44,22 @@ namespace HellBrick.Json.Deserialization.Providers
 					Condition
 					(
 						Equal( text, Constant( null, typeof( string ) ) ),
-						Default( typeof( bool? ) ),
+						Default( typeof( T ) ),
 						Convert
 						(
-							Call( null, Reflection.Method( () => Boolean.Parse( default( string ) ) ), text ),
-							typeof( bool? )
+							ParseString( text ),
+							typeof( T )
 						)
 					)
 				);
 			}
+
+			protected abstract Expression ParseString( Expression text );
+		}
+
+		private class BooleanDeserializerBuilder : StringParsingDeserializerBuilder<bool?>
+		{
+			protected override Expression ParseString( Expression text ) => Call( null, Reflection.Method( () => Boolean.Parse( default( string ) ) ), text );
 		}
 	}
 }
