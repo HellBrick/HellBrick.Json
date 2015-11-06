@@ -24,7 +24,7 @@ namespace HellBrick.Json.Deserialization
 		{
 			IDeserializerBuilder<T> builder = _providers.Select( p => p.TryCreateBuilder<T>() ).FirstOrDefault( b => b != null );
 			if ( builder == null )
-				throw new NotSupportedException( $"Failed to select deserializer builder for {typeof( T ).Name}" );
+				throw new NotSupportedException( $"Failed to select deserializer builder for {typeof( T ).FullName}" );
 
 			return builder;
 		}
