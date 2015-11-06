@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -60,6 +61,17 @@ namespace HellBrick.Json.Deserialization.Providers
 		private class BooleanDeserializerBuilder : StringParsingDeserializerBuilder<bool?>
 		{
 			protected override Expression ParseString( Expression text ) => Call( null, Reflection.Method( () => Boolean.Parse( default( string ) ) ), text );
+		}
+
+		private class DoubleDeserializerBuilder : StringParsingDeserializerBuilder<double?>
+		{
+			protected override Expression ParseString( Expression text ) =>
+				Call
+				(
+					null,
+					Reflection.Method( () => Double.Parse( default( string ), default( IFormatProvider ) ) ),
+					text, Constant( CultureInfo.InvariantCulture )
+				);
 		}
 	}
 }
