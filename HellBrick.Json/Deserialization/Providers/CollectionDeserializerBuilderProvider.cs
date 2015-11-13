@@ -47,24 +47,32 @@ namespace HellBrick.Json.Deserialization.Providers
 				LabelTarget returnLabel = Expression.Label( "return" );
 				LabelTarget loopBreak = Expression.Label( "loopBreak" );
 
-				yield return Expression.Assign( locals.Collection, Expression.New( typeof( TCollection ) ) );
+				yield return Expression.Assign( locals.Collection, Expression.Constant( null, typeof( TCollection ) ) );
 
 				yield return Expression.IfThen
 				(
-					Expression.Call( reader, JsonReaderMembers.Read ),
-					Expression.Loop
+					Expression.AndAlso
 					(
-						Expression.Block
+						Expression.Call( reader, JsonReaderMembers.Read ),
+						Expression.Equal( Expression.Property( reader, JsonReaderMembers.TokenType ), Expression.Constant( JsonToken.StartArray ) )
+					),
+					Expression.Block
+					(
+						Expression.Assign( locals.Collection, Expression.New( typeof( TCollection ) ) ),
+						Expression.Loop
 						(
-							Expression.Assign( locals.Item, ExpressionFactory.Deserialize( typeof( TLiftedItem ), reader ) ),
-							Expression.IfThenElse
+							Expression.Block
 							(
-								Expression.NotEqual( Expression.Property( reader, JsonReaderMembers.TokenType ), Expression.Constant( JsonToken.EndArray ) ),
-								Expression.Call( locals.Collection, _addMethod, UnliftItem( locals.Item ) ),
-								Expression.Break( loopBreak )
-							)
-						),
-						loopBreak
+								Expression.Assign( locals.Item, ExpressionFactory.Deserialize( typeof( TLiftedItem ), reader ) ),
+								Expression.IfThenElse
+								(
+									Expression.NotEqual( Expression.Property( reader, JsonReaderMembers.TokenType ), Expression.Constant( JsonToken.EndArray ) ),
+									Expression.Call( locals.Collection, _addMethod, UnliftItem( locals.Item ) ),
+									Expression.Break( loopBreak )
+								)
+							),
+							loopBreak
+						)
 					)
 				);
 

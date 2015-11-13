@@ -21,7 +21,7 @@ namespace HellBrick.Json.Serialization.Providers
 			return builder;
 		}
 
-		private class CollectionSerializerBuilder<TCollection, TItem> : ISerializerBuilder<TCollection>
+		private class CollectionSerializerBuilder<TCollection, TItem> : ReferenceTypeSerializerBuilder<TCollection>
 		{
 			private readonly EnumerableTypeInfo _enumerableTypeInfo;
 
@@ -30,7 +30,7 @@ namespace HellBrick.Json.Serialization.Providers
 				_enumerableTypeInfo = enumerableTypeInfo;
 			}
 
-			public Expression BuildSerializationExpression( Expression value, Expression writer )
+			protected override Expression SerializeNonNullValue( Expression value, Expression writer )
 			{
 				LocalVariables locals = new LocalVariables( _enumerableTypeInfo );
 				return Expression.Block( locals.Variables, EnumerateSerializerExpressions( value, writer, locals ) );

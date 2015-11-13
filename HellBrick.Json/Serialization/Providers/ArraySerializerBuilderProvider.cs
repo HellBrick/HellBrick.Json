@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HellBrick.Json.Common;
 using HellBrick.Json.Utils;
+using Newtonsoft.Json;
 
 namespace HellBrick.Json.Serialization.Providers
 {
@@ -22,9 +23,9 @@ namespace HellBrick.Json.Serialization.Providers
 			return Activator.CreateInstance( typeof( ArraySerializerBuilder<> ).MakeGenericType( itemType ) ) as ISerializerBuilder<T>;
 		}
 
-		private class ArraySerializerBuilder<TItem> : ISerializerBuilder<TItem[]>
+		private class ArraySerializerBuilder<TItem> : ReferenceTypeSerializerBuilder<TItem[]>
 		{
-			public Expression BuildSerializationExpression( Expression value, Expression writer )
+			protected override Expression SerializeNonNullValue( Expression value, Expression writer )
 			{
 				LocalVariables locals = new LocalVariables();
 				return Expression.Block( locals.Variables, EnumerateExpressions( value, writer, locals ) );
