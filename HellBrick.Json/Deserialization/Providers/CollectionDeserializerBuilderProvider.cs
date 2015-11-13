@@ -51,7 +51,11 @@ namespace HellBrick.Json.Deserialization.Providers
 
 				yield return Expression.IfThen
 				(
-					Expression.Call( reader, JsonReaderMembers.Read ),
+					Expression.AndAlso
+					(
+						Expression.Call( reader, JsonReaderMembers.Read ),
+						Expression.Equal( Expression.Property( reader, JsonReaderMembers.TokenType ), Expression.Constant( JsonToken.StartArray ) )
+					),
 					Expression.Block
 					(
 						Expression.Assign( locals.Collection, Expression.New( typeof( TCollection ) ) ),
