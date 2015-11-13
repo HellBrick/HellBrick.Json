@@ -26,7 +26,10 @@ namespace HellBrick.Json.Deserialization.Providers
 		{
 			private readonly MethodInfo _toArray = Reflection.Method( () => Enumerable.ToArray( default( List<TItem> ) ) );
 
-			protected override Expression ConvertToOuter( Expression inner ) => Call( null, _toArray, inner );
+			protected override Expression ConvertToOuter( Expression inner )
+			{
+				return Call( null, _toArray, inner );
+			}
 		}
 	}
 }
