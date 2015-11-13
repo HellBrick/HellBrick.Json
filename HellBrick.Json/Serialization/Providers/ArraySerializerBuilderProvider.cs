@@ -23,19 +23,9 @@ namespace HellBrick.Json.Serialization.Providers
 			return Activator.CreateInstance( typeof( ArraySerializerBuilder<> ).MakeGenericType( itemType ) ) as ISerializerBuilder<T>;
 		}
 
-		private class ArraySerializerBuilder<TItem> : ISerializerBuilder<TItem[]>
+		private class ArraySerializerBuilder<TItem> : ReferenceTypeSerializerBuilder<TItem[]>
 		{
-			public Expression BuildSerializationExpression( Expression value, Expression writer )
-			{
-				return Expression.IfThenElse
-				(
-					Expression.Equal( value, Expression.Constant( null, value.Type ) ),
-					Expression.Call( writer, Reflection.Method( ( JsonWriter w ) => w.WriteNull() ) ),
-					SerializeNonNull( value, writer )
-				);
-			}
-
-			private Expression SerializeNonNull( Expression value, Expression writer )
+			protected override Expression SerializeNonNullValue( Expression value, Expression writer )
 			{
 				LocalVariables locals = new LocalVariables();
 				return Expression.Block( locals.Variables, EnumerateExpressions( value, writer, locals ) );

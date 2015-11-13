@@ -59,6 +59,7 @@
     <Compile Include="Serialization\Providers\ClassSerializerBuilderProvider.cs" />
     <Compile Include="Serialization\Providers\CollectionSerializerBuilderProvider.cs" />
     <Compile Include="Serialization\Providers\ValueSerializerBuilderProvider.cs" />
+    <Compile Include="Serialization\ReferenceTypeSerializerBuilder.cs" />
     <Compile Include="Serialization\SerializerBuilderSelector.cs" />
     <Compile Include="Common\CollectionTypeInfo.cs" />
     <Compile Include="Serialization\ExpressionFactory.cs" />
