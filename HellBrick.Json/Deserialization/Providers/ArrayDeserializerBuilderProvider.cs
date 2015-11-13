@@ -28,7 +28,18 @@ namespace HellBrick.Json.Deserialization.Providers
 
 			protected override Expression ConvertToOuter( Expression inner )
 			{
-				return Call( null, _toArray, inner );
+				ParameterExpression innerResult = Parameter( inner.Type, "collection" );
+				return Block
+				(
+					new ParameterExpression[] { innerResult },
+					Assign( innerResult, inner ),
+					Condition
+					(
+						Equal( innerResult, Constant( null, inner.Type ) ),
+						Constant( null, typeof( TItem[] ) ),
+						Call( null, _toArray, innerResult )
+					)
+				);
 			}
 		}
 	}
