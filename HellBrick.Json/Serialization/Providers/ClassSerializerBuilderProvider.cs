@@ -35,7 +35,7 @@ namespace HellBrick.Json.Serialization.Providers
 			}
 		}
 
-		private class ClassSerializerBuilder<T> : ISerializerBuilder<T>
+		private class ClassSerializerBuilder<T> : ReferenceTypeSerializerBuilder<T>
 		{
 			private readonly PropertyInfo[] _properties;
 
@@ -44,7 +44,7 @@ namespace HellBrick.Json.Serialization.Providers
 				_properties = properties;
 			}
 
-			public Expression BuildSerializationExpression( Expression value, Expression writer )
+			protected override Expression SerializeNonNullValue( Expression value, Expression writer )
 			{
 				return Block( EnumerateExpressions( value, writer ) );
 			}
