@@ -73,5 +73,16 @@ namespace HellBrick.Json.Deserialization.Providers
 					text, Constant( CultureInfo.InvariantCulture )
 				);
 		}
+
+		private class TimeSpanDeserializerBuilder : StringParsingDeserializerBuilder<TimeSpan?>
+		{
+			protected override Expression ParseString( Expression text ) =>
+				Call
+				(
+					null,
+					Reflection.Method( () => TimeSpan.Parse( default( string ), default( IFormatProvider ) ) ),
+					text, Constant( CultureInfo.InvariantCulture )
+				);
+		}
 	}
 }

@@ -49,5 +49,11 @@ namespace HellBrick.Json.Test
 		{
 			json.Should().RoundTripThrough( value );
 		}
+
+		[Fact]
+		public void TimeSpan()
+		{
+			"\"01:23:45\"".Should().RoundTripThrough( new TimeSpan( 1, 23, 45 ) );
+		}
 	}
 }
