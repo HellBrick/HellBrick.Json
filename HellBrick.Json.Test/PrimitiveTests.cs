@@ -55,5 +55,11 @@ namespace HellBrick.Json.Test
 		{
 			"\"01:23:45\"".Should().RoundTripThrough( new TimeSpan( 1, 23, 45 ) );
 		}
+
+		[Fact]
+		public void Uri()
+		{
+			"\"http://bogus.host/юникод?p=42\"".Should().RoundTripThrough( new Uri( "http://bogus.host/юникод?p=42" ) );
+		}
 	}
 }
