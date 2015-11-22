@@ -34,5 +34,13 @@ namespace HellBrick.Json.Test
 			NestedClass value = new NestedClass { Inner = new SimpleFlatClass() { Number = 64, Text = "Another text" } };
 			json.Should().RoundTripThrough( value );
 		}
+
+		[Fact]
+		public void ValueProvidedByDefaultConstructorIsDeserializedFromEmptyJson()
+		{
+			string json = "{}";
+			CustomDefaultValueClass value = new CustomDefaultValueClass();
+			json.Should().DeserializeTo( value );
+		}
 	}
 }

@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassTests.cs" />
+    <Compile Include="Types\CustomDefaultValueClass.cs" />
     <Compile Include="Types\NestedClass.cs" />
     <Compile Include="Types\SimpleFlatClass.cs" />
     <Compile Include="CollectionAssertions.cs" />
