@@ -84,5 +84,23 @@ namespace HellBrick.Json.Deserialization.Providers
 					text, Constant( CultureInfo.InvariantCulture )
 				);
 		}
+
+		private class UriDeserializerBuilder : StringParsingDeserializerBuilder<Uri>
+		{
+			private static Uri TryParse( string text )
+			{
+				Uri uri;
+				Uri.TryCreate( text, UriKind.RelativeOrAbsolute, out uri );
+				return uri;
+			}
+
+			protected override Expression ParseString( Expression text ) =>
+				Call
+				(
+					null,
+					Reflection.Method( () => UriDeserializerBuilder.TryParse( default( string ) ) ),
+					text
+				);
+		}
 	}
 }
