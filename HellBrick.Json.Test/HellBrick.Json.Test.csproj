@@ -71,6 +71,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassTests.cs" />
+    <Compile Include="Types\NestedClass.cs" />
+    <Compile Include="Types\SimpleFlatClass.cs" />
     <Compile Include="CollectionAssertions.cs" />
     <Compile Include="CollectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
