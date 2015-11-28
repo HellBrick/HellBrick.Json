@@ -55,8 +55,15 @@ namespace HellBrick.Json.Serialization.Providers
 
 				foreach ( PropertyInfo property in _properties )
 				{
-					yield return Call( writer, JsonWriterMembers.WritePropertyName, Constant( property.Name ) );
-					yield return Serialize( Property( value, property ), writer );
+					yield return IfThen
+					(
+						NotEqual( Property( value, property ), Default( property.PropertyType ) ),
+						Block
+						(
+							Call( writer, JsonWriterMembers.WritePropertyName, Constant( property.Name ) ),
+							Serialize( Property( value, property ), writer )
+						)
+					);
 				}
 
 				yield return Call( writer, JsonWriterMembers.WriteEndObject );
