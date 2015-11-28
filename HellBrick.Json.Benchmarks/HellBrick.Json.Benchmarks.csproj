@@ -57,6 +57,7 @@
     <Compile Include="Deserialization\IntArrayDeserializationBenchmark.cs" />
     <Compile Include="Deserialization\FlatClassDeserializationBenchmark.cs" />
     <Compile Include="Deserialization\DeserializationBenchmarkCore.cs" />
+    <Compile Include="RoundTrip\DefaultValuesRoundTripBenchmark.cs" />
     <Compile Include="RoundTrip\IntArrayRoundTripBenchmark.cs" />
     <Compile Include="RoundTrip\FlatClassRoundTripBenchmark.cs" />
     <Compile Include="Program.cs" />
