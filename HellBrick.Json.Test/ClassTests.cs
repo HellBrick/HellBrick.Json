@@ -42,5 +42,19 @@ namespace HellBrick.Json.Test
 			CustomDefaultValueClass value = new CustomDefaultValueClass();
 			json.Should().DeserializeTo( value );
 		}
+
+		[Fact]
+		public void DefaultValueTypeValueIsSkipped()
+		{
+			SimpleFlatClass value = new SimpleFlatClass() { Text = "Text", Number = default( int ) };
+			value.Should().SerializeTo<SimpleFlatClass>( "{\"Text\":\"Text\"}" );
+		}
+
+		[Fact]
+		public void DefaultReferenceTypeValueIsSkipped()
+		{
+			NestedClass value = new NestedClass() { Inner = null };
+			value.Should().SerializeTo<NestedClass>( "{}" );
+		}
 	}
 }
