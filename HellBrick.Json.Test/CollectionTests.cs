@@ -96,4 +96,32 @@ namespace HellBrick.Json.Test.CollectionTests
 			json.ShouldDeserializeToUnordered<HashSet<int>, int>( set );
 		}
 	}
+
+	public class ByteArrayTests
+	{
+		[Fact]
+		public void Null()
+		{
+			byte[] blob = null;
+			string json = "null";
+			json.ShouldRoundTripThroughOrdered<byte[], byte>( blob );
+		}
+
+		[Fact]
+		public void Empty()
+		{
+			byte[] blob = Array.Empty<byte>();
+			string json = "\"\"";
+			json.ShouldRoundTripThroughOrdered<byte[], byte>( blob );
+		}
+
+		[Fact]
+		public void NonEmptyIsSerializedToBase64()
+		{
+			byte[] blob = new byte[] { 0x42, 0x64, 0xFF };
+			string json = $"\"{Convert.ToBase64String( blob )}\"";
+			json.ShouldRoundTripThroughOrdered<byte[], byte>( blob );
+
+		}
+	}
 }
