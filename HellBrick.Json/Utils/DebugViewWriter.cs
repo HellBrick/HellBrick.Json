@@ -1106,8 +1106,9 @@ namespace System.Linq.Expressions
 				Out( " " );
 				VisitParameter( variable );
 				Out( ";", Flow.NewLine );
-				WriteLine();
 			}
+
+			WriteLine();
 
 			foreach ( Expression expression in node.Expressions )
 			{
