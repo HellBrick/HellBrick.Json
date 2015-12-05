@@ -831,7 +831,6 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitMethodCall( MethodCallExpression node )
 		{
-			Out( ".Call " );
 			if ( node.Object != null )
 			{
 				ParenthesizedVisit( node, node.Object );
