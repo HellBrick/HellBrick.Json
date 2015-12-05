@@ -1047,12 +1047,30 @@ namespace System.Linq.Expressions
 			if ( node.Type != typeof( void ) )
 				Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString() ) );
 
-			if ( node.Variables.Count > 0 )
-				VisitDeclarations( node.Variables );
+			OutLine( "{" );
+			Indent();
 
-			Out( " " );
-			// Use ; to separate expressions in the block
-			VisitExpressions( '{', ';', node.Expressions );
+			foreach ( ParameterExpression variable in node.Variables )
+			{
+				Out( variable.Type.ToString() );
+				if ( variable.IsByRef )
+				{
+					Out( "&" );
+				}
+				Out( " " );
+				VisitParameter( variable );
+				Out( ";", Flow.NewLine );
+				WriteLine();
+			}
+
+			foreach ( Expression expression in node.Expressions )
+			{
+				Visit( expression );
+				Out( ";", Flow.NewLine );
+			}
+
+			Dedent();
+			OutLine( "}" );
 
 			return node;
 		}
