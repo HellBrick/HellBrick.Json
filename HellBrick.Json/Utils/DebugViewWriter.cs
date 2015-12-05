@@ -1177,33 +1177,35 @@ namespace System.Linq.Expressions
 		{
 			foreach ( var test in node.TestValues )
 			{
-				Out( ".Case (" );
+				Out( "case " );
 				Visit( test );
-				Out( "):", Flow.NewLine );
+				Out( ":", Flow.NewLine );
 			}
-			Indent(); Indent();
+			Indent();
 			Visit( node.Body );
-			Dedent(); Dedent();
+			Dedent();
 			NewLine();
 			return node;
 		}
 
 		protected override Expression VisitSwitch( SwitchExpression node )
 		{
-			Out( ".Switch " );
-			Out( "(" );
+			Out( "switch " );
+			Out( "( " );
 			Visit( node.SwitchValue );
-			Out( ")" );
+			Out( " )" );
 			OutLine( "{" );
+			Indent();
 			Visit( node.Cases, VisitSwitchCase );
 			if ( node.DefaultBody != null )
 			{
-				Out( ".Default:", Flow.NewLine );
-				Indent(); Indent();
+				Out( "default:", Flow.NewLine );
+				Indent();
 				Visit( node.DefaultBody );
-				Dedent(); Dedent();
+				Dedent();
 				NewLine();
 			}
+			Dedent();
 			OutLine( "}" );
 			return node;
 		}
