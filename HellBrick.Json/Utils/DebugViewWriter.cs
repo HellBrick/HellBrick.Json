@@ -1059,7 +1059,11 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitDefault( DefaultExpression node )
 		{
-			Out( ".Default(" + node.Type.ToString() + ")" );
+			if ( !node.Type.GetTypeInfo().IsValueType )
+				Out( "null" );
+			else
+				Out( "default(" + node.Type.ToString() + ")" );
+
 			return node;
 		}
 
