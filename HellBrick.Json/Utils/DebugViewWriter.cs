@@ -477,25 +477,24 @@ namespace System.Linq.Expressions
 		{
 			if ( IsSimpleExpression( node.Test ) )
 			{
-				Out( ".If (" );
+				Out( "if ( " );
 				Visit( node.Test );
-				Out( ")" );
-				OutLine( "{" );
+				Out( " )" );
 			}
 			else
 			{
-				Out( ".If (", Flow.NewLine );
+				Out( "if (", Flow.NewLine );
 				Indent();
 				Visit( node.Test );
 				Dedent();
 				Out( Flow.NewLine, ")" );
-				OutLine( "{" );
 			}
+			OutLine( "{" );
 			Indent();
 			Visit( node.IfTrue );
 			Dedent();
-			Out( Flow.NewLine, "}", Flow.NewLine );
-			Out( ".Else" );
+			OutLine( "}" );
+			Out( "else" );
 			OutLine( "{" );
 			Indent();
 			Visit( node.IfFalse );
