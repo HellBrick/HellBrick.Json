@@ -865,7 +865,28 @@ namespace System.Linq.Expressions
 			}
 			Out( "." );
 			Out( node.Method.Name );
-			VisitExpressions( '(', node.Arguments );
+			Out( "(" );
+
+			if ( node.Arguments.Count > 0 )
+			{
+				Out( " " );
+
+				bool isFirst = true;
+				foreach ( Expression argument in node.Arguments )
+				{
+					if ( !isFirst )
+						Out( ", " );
+
+					Visit( argument );
+
+					isFirst = false;
+				}
+
+				Out( " " );
+			}
+
+			Out( ")", Flow.Break );
+
 			return node;
 		}
 
