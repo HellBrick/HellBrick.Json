@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
+using HellBrick.Json.Utils;
 
 namespace System.Linq.Expressions
 {
@@ -263,7 +264,7 @@ namespace System.Linq.Expressions
 		{
 			VisitExpressions( '(', ',', expressions, variable =>
 			{
-				Out( variable.Type.ToString() );
+				Out( variable.Type.GetTypeInfo().ToDeclarationString() );
 				if ( variable.IsByRef )
 				{
 					Out( "&" );
@@ -444,7 +445,7 @@ namespace System.Linq.Expressions
 					  "{0} {1}<{2}>",
 					  ".Lambda",
 					  GetLambdaName( node ),
-					  node.Type.ToString()
+					  node.Type.GetTypeInfo().ToDeclarationString()
 				 )
 			);
 
@@ -571,7 +572,7 @@ namespace System.Linq.Expressions
 			TypeInfo typeInfo = node.Type.GetTypeInfo();
 			if ( value is Enum && typeInfo.IsEnum && Enum.IsDefined( node.Type, value ) )
 			{
-				Out( node.Type.ToString() );
+				Out( node.Type.GetTypeInfo().ToDeclarationString() );
 				Out( "." );
 				Out( value.ToString() );
 				return node;
@@ -580,7 +581,7 @@ namespace System.Linq.Expressions
 			Out( String.Format(
 				 CultureInfo.CurrentCulture,
 				 ".Constant<{0}>({1})",
-				 node.Type.ToString(),
+				 node.Type.GetTypeInfo().ToDeclarationString(),
 				 value ) );
 
 			return node;
@@ -633,7 +634,7 @@ namespace System.Linq.Expressions
 			else
 			{
 				// For static members, include the type name
-				Out( member.DeclaringType.ToString() + "." + member.Name );
+				Out( member.DeclaringType.GetTypeInfo().ToDeclarationString() + "." + member.Name );
 			}
 		}
 
@@ -873,7 +874,7 @@ namespace System.Linq.Expressions
 			}
 			else if ( node.Method.DeclaringType != null )
 			{
-				Out( node.Method.DeclaringType.ToString() );
+				Out( node.Method.DeclaringType.GetTypeInfo().ToDeclarationString() );
 			}
 			else
 			{
@@ -917,7 +918,7 @@ namespace System.Linq.Expressions
 			else
 			{
 				// .NewArray MyType {expr1, expr2}
-				Out( ".NewArray " + node.Type.ToString(), Flow.Space );
+				Out( ".NewArray " + node.Type.GetTypeInfo().ToDeclarationString(), Flow.Space );
 				VisitExpressions( '{', node.Expressions );
 			}
 			return node;
@@ -925,7 +926,7 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitNew( NewExpression node )
 		{
-			Out( "new " + node.Type.ToString() );
+			Out( "new " + node.Type.GetTypeInfo().ToDeclarationString() );
 			VisitExpressions( '(', node.Arguments );
 			return node;
 		}
@@ -1003,10 +1004,10 @@ namespace System.Linq.Expressions
 			switch ( node.NodeType )
 			{
 				case ExpressionType.Convert:
-					Out( "(" + node.Type.ToString() + ")" );
+					Out( "(" + node.Type.GetTypeInfo().ToDeclarationString() + ")" );
 					break;
 				case ExpressionType.ConvertChecked:
-					Out( "#(" + node.Type.ToString() + ")" );
+					Out( "#(" + node.Type.GetTypeInfo().ToDeclarationString() + ")" );
 					break;
 				case ExpressionType.TypeAs:
 					break;
@@ -1069,7 +1070,7 @@ namespace System.Linq.Expressions
 			{
 				case ExpressionType.TypeAs:
 					Out( Flow.Space, ".As", Flow.Space | Flow.Break );
-					Out( node.Type.ToString() );
+					Out( node.Type.GetTypeInfo().ToDeclarationString() );
 					break;
 
 				case ExpressionType.ArrayLength:
@@ -1090,14 +1091,14 @@ namespace System.Linq.Expressions
 		protected override Expression VisitBlock( BlockExpression node )
 		{
 			if ( node.Type != typeof( void ) )
-				Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString() ) );
+				Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.GetTypeInfo().ToDeclarationString() ) );
 
 			OutLine( "{" );
 			Indent();
 
 			foreach ( ParameterExpression variable in node.Variables )
 			{
-				Out( variable.Type.ToString() );
+				Out( variable.Type.GetTypeInfo().ToDeclarationString() );
 				if ( variable.IsByRef )
 				{
 					Out( "&" );
@@ -1125,7 +1126,7 @@ namespace System.Linq.Expressions
 			if ( !node.Type.GetTypeInfo().IsValueType )
 				Out( "null" );
 			else
-				Out( "default(" + node.Type.ToString() + ")" );
+				Out( "default(" + node.Type.GetTypeInfo().ToDeclarationString() + ")" );
 
 			return node;
 		}
@@ -1323,7 +1324,7 @@ namespace System.Linq.Expressions
 					  CultureInfo.CurrentCulture,
 					  ".Lambda {0}<{1}>",
 					  GetLambdaName( lambda ),
-					  lambda.Type.ToString() )
+					  lambda.Type.GetTypeInfo().ToDeclarationString() )
 			);
 
 			VisitDeclarations( lambda.Parameters );
