@@ -1106,7 +1106,7 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitGoto( GotoExpression node )
 		{
-			Out( "." + node.Kind.ToString(), Flow.Space );
+			Out( node.Kind.ToString().ToLowerInvariant(), Flow.Space );
 			Out( GetLabelTargetName( node.Target ), Flow.Space );
 			Out( "{", Flow.Space );
 			Visit( node.Value );
