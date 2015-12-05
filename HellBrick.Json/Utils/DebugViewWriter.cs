@@ -1237,7 +1237,7 @@ namespace System.Linq.Expressions
 
 		private void DumpLabel( LabelTarget target )
 		{
-			Out( String.Format( CultureInfo.CurrentCulture, ".LabelTarget {0}:", GetLabelTargetName( target ) ) );
+			Out( String.Format( CultureInfo.CurrentCulture, "{0}:", GetLabelTargetName( target ) ) );
 		}
 
 		private string GetLabelTargetName( LabelTarget target )
