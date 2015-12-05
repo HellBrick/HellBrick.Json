@@ -1035,7 +1035,9 @@ namespace System.Linq.Expressions
 			if ( node.Type != typeof( void ) )
 				Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString() ) );
 
-			VisitDeclarations( node.Variables );
+			if ( node.Variables.Count > 0 )
+				VisitDeclarations( node.Variables );
+
 			Out( " " );
 			// Use ; to separate expressions in the block
 			VisitExpressions( '{', ';', node.Expressions );
