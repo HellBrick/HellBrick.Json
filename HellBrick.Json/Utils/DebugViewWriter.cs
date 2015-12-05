@@ -494,13 +494,25 @@ namespace System.Linq.Expressions
 			Visit( node.IfTrue );
 			Dedent();
 			OutLine( "}" );
-			Out( "else" );
-			OutLine( "{" );
-			Indent();
-			Visit( node.IfFalse );
-			Dedent();
-			OutLine( "}" );
+
+			if ( !HasEmptyElseClause( node ) )
+			{
+				Out( "else" );
+				OutLine( "{" );
+				Indent();
+				Visit( node.IfFalse );
+				Dedent();
+				OutLine( "}" );
+			}
+
 			return node;
+		}
+
+		private static bool HasEmptyElseClause( ConditionalExpression node )
+		{
+			DefaultExpression defaultElseClause = node.IfFalse as DefaultExpression;
+			bool elseClauseElseIsEmpty = defaultElseClause?.Type == typeof( void );
+			return elseClauseElseIsEmpty;
 		}
 
 		protected override Expression VisitConstant( ConstantExpression node )
