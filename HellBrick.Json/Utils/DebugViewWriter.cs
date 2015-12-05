@@ -169,6 +169,11 @@ namespace System.Linq.Expressions
 
 		#region The printing code
 
+		private void OutLine( string line )
+		{
+			Out( Flow.NewLine, line, Flow.NewLine );
+		}
+
 		private void Out( string s )
 		{
 			Out( Flow.None, s, Flow.None );
@@ -270,7 +275,10 @@ namespace System.Linq.Expressions
 
 		private void VisitExpressions<T>( char open, char separator, IList<T> expressions, Action<T> visit )
 		{
-			Out( open.ToString() );
+			if ( open == '{' )
+				OutLine( "{" );
+			else
+				Out( open.ToString() );
 
 			if ( expressions != null )
 			{
@@ -471,7 +479,8 @@ namespace System.Linq.Expressions
 			{
 				Out( ".If (" );
 				Visit( node.Test );
-				Out( ") {", Flow.NewLine );
+				Out( ")" );
+				OutLine( "{" );
 			}
 			else
 			{
@@ -479,16 +488,19 @@ namespace System.Linq.Expressions
 				Indent();
 				Visit( node.Test );
 				Dedent();
-				Out( Flow.NewLine, ") {", Flow.NewLine );
+				Out( Flow.NewLine, ")" );
+				OutLine( "{" );
 			}
 			Indent();
 			Visit( node.IfTrue );
 			Dedent();
-			Out( Flow.NewLine, "} .Else {", Flow.NewLine );
+			Out( Flow.NewLine, "}", Flow.NewLine );
+			Out( ".Else" );
+			OutLine( "{" );
 			Indent();
 			Visit( node.IfFalse );
 			Dedent();
-			Out( Flow.NewLine, "}" );
+			OutLine( "}" );
 			return node;
 		}
 
@@ -1067,11 +1079,11 @@ namespace System.Linq.Expressions
 			{
 				DumpLabel( node.ContinueLabel );
 			}
-			Out( " {", Flow.NewLine );
+			OutLine( "{" );
 			Indent();
 			Visit( node.Body );
 			Dedent();
-			Out( Flow.NewLine, "}" );
+			OutLine( "}" );
 			if ( node.BreakLabel != null )
 			{
 				Out( "", Flow.NewLine );
@@ -1100,7 +1112,8 @@ namespace System.Linq.Expressions
 			Out( ".Switch " );
 			Out( "(" );
 			Visit( node.SwitchValue );
-			Out( ") {", Flow.NewLine );
+			Out( ")" );
+			OutLine( "{" );
 			Visit( node.Cases, VisitSwitchCase );
 			if ( node.DefaultBody != null )
 			{
@@ -1110,7 +1123,7 @@ namespace System.Linq.Expressions
 				Dedent(); Dedent();
 				NewLine();
 			}
-			Out( "}" );
+			OutLine( "}" );
 			return node;
 		}
 
