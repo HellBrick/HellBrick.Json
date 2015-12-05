@@ -503,11 +503,17 @@ namespace System.Linq.Expressions
 
 		private void VisitBranch( Expression branch )
 		{
-			OutLine( "{" );
-			Indent();
-			Visit( branch );
-			Dedent();
-			OutLine( "}" );
+			BlockExpression branchBlock = branch as BlockExpression;
+			if ( branchBlock != null )
+				Visit( branchBlock );
+			else
+			{
+				OutLine( "{" );
+				Indent();
+				Visit( branch );
+				Dedent();
+				OutLine( "}" );
+			}
 		}
 
 		private static bool HasEmptyElseClause( ConditionalExpression node )
