@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
+using HellBrick.Json.Utils;
 
 namespace System.Linq.Expressions
 {
@@ -169,6 +170,11 @@ namespace System.Linq.Expressions
 
 		#region The printing code
 
+		private void OutLine( string line )
+		{
+			Out( Flow.NewLine, line, Flow.NewLine );
+		}
+
 		private void Out( string s )
 		{
 			Out( Flow.None, s, Flow.None );
@@ -258,7 +264,7 @@ namespace System.Linq.Expressions
 		{
 			VisitExpressions( '(', ',', expressions, variable =>
 			{
-				Out( variable.Type.ToString() );
+				Out( variable.Type.GetTypeInfo().ToDeclarationString() );
 				if ( variable.IsByRef )
 				{
 					Out( "&" );
@@ -270,7 +276,10 @@ namespace System.Linq.Expressions
 
 		private void VisitExpressions<T>( char open, char separator, IList<T> expressions, Action<T> visit )
 		{
-			Out( open.ToString() );
+			if ( open == '{' )
+				OutLine( "{" );
+			else
+				Out( open.ToString() );
 
 			if ( expressions != null )
 			{
@@ -436,7 +445,7 @@ namespace System.Linq.Expressions
 					  "{0} {1}<{2}>",
 					  ".Lambda",
 					  GetLambdaName( node ),
-					  node.Type.ToString()
+					  node.Type.GetTypeInfo().ToDeclarationString()
 				 )
 			);
 
@@ -469,27 +478,50 @@ namespace System.Linq.Expressions
 		{
 			if ( IsSimpleExpression( node.Test ) )
 			{
-				Out( ".If (" );
+				Out( "if ( " );
 				Visit( node.Test );
-				Out( ") {", Flow.NewLine );
+				Out( " )" );
 			}
 			else
 			{
-				Out( ".If (", Flow.NewLine );
+				Out( "if (", Flow.NewLine );
 				Indent();
 				Visit( node.Test );
 				Dedent();
-				Out( Flow.NewLine, ") {", Flow.NewLine );
+				Out( Flow.NewLine, ")" );
 			}
-			Indent();
-			Visit( node.IfTrue );
-			Dedent();
-			Out( Flow.NewLine, "} .Else {", Flow.NewLine );
-			Indent();
-			Visit( node.IfFalse );
-			Dedent();
-			Out( Flow.NewLine, "}" );
+
+			VisitBranch( node.IfTrue );
+
+			if ( !HasEmptyElseClause( node ) )
+			{
+				Out( "else" );
+				VisitBranch( node.IfFalse );
+			}
+
 			return node;
+		}
+
+		private void VisitBranch( Expression branch )
+		{
+			BlockExpression branchBlock = branch as BlockExpression;
+			if ( branchBlock != null )
+				Visit( branchBlock );
+			else
+			{
+				OutLine( "{" );
+				Indent();
+				Visit( branch );
+				Dedent();
+				OutLine( "}" );
+			}
+		}
+
+		private static bool HasEmptyElseClause( ConditionalExpression node )
+		{
+			DefaultExpression defaultElseClause = node.IfFalse as DefaultExpression;
+			bool elseClauseElseIsEmpty = defaultElseClause?.Type == typeof( void );
+			return elseClauseElseIsEmpty;
 		}
 
 		protected override Expression VisitConstant( ConstantExpression node )
@@ -499,43 +531,59 @@ namespace System.Linq.Expressions
 			if ( value == null )
 			{
 				Out( "null" );
+				return node;
 			}
-			else if ( ( value is string ) && node.Type == typeof( string ) )
+
+			if ( ( value is string ) && node.Type == typeof( string ) )
 			{
 				Out( String.Format(
 					 CultureInfo.CurrentCulture,
 					 "\"{0}\"",
 					 value ) );
+
+				return node;
 			}
-			else if ( ( value is char ) && node.Type == typeof( char ) )
+
+			if ( ( value is char ) && node.Type == typeof( char ) )
 			{
 				Out( String.Format(
 					 CultureInfo.CurrentCulture,
 					 "'{0}'",
 					 value ) );
+
+				return node;
 			}
-			else if ( ( value is int ) && node.Type == typeof( int )
+
+			if ( ( value is int ) && node.Type == typeof( int )
 			  || ( value is bool ) && node.Type == typeof( bool ) )
 			{
 				Out( value.ToString() );
+				return node;
 			}
-			else
+
+			string suffix = GetConstantValueSuffix( node.Type );
+			if ( suffix != null )
 			{
-				string suffix = GetConstantValueSuffix( node.Type );
-				if ( suffix != null )
-				{
-					Out( value.ToString() );
-					Out( suffix );
-				}
-				else
-				{
-					Out( String.Format(
-						 CultureInfo.CurrentCulture,
-						 ".Constant<{0}>({1})",
-						 node.Type.ToString(),
-						 value ) );
-				}
+				Out( value.ToString() );
+				Out( suffix );
+				return node;
 			}
+
+			TypeInfo typeInfo = node.Type.GetTypeInfo();
+			if ( value is Enum && typeInfo.IsEnum && Enum.IsDefined( node.Type, value ) )
+			{
+				Out( node.Type.GetTypeInfo().ToDeclarationString() );
+				Out( "." );
+				Out( value.ToString() );
+				return node;
+			}
+
+			Out( String.Format(
+				 CultureInfo.CurrentCulture,
+				 ".Constant<{0}>({1})",
+				 node.Type.GetTypeInfo().ToDeclarationString(),
+				 value ) );
+
 			return node;
 		}
 
@@ -586,7 +634,7 @@ namespace System.Linq.Expressions
 			else
 			{
 				// For static members, include the type name
-				Out( member.DeclaringType.ToString() + "." + member.Name );
+				Out( member.DeclaringType.GetTypeInfo().ToDeclarationString() + "." + member.Name );
 			}
 		}
 
@@ -820,14 +868,13 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitMethodCall( MethodCallExpression node )
 		{
-			Out( ".Call " );
 			if ( node.Object != null )
 			{
 				ParenthesizedVisit( node, node.Object );
 			}
 			else if ( node.Method.DeclaringType != null )
 			{
-				Out( node.Method.DeclaringType.ToString() );
+				Out( node.Method.DeclaringType.GetTypeInfo().ToDeclarationString() );
 			}
 			else
 			{
@@ -835,7 +882,28 @@ namespace System.Linq.Expressions
 			}
 			Out( "." );
 			Out( node.Method.Name );
-			VisitExpressions( '(', node.Arguments );
+			Out( "(" );
+
+			if ( node.Arguments.Count > 0 )
+			{
+				Out( " " );
+
+				bool isFirst = true;
+				foreach ( Expression argument in node.Arguments )
+				{
+					if ( !isFirst )
+						Out( ", " );
+
+					Visit( argument );
+
+					isFirst = false;
+				}
+
+				Out( " " );
+			}
+
+			Out( ")", Flow.Break );
+
 			return node;
 		}
 
@@ -850,7 +918,7 @@ namespace System.Linq.Expressions
 			else
 			{
 				// .NewArray MyType {expr1, expr2}
-				Out( ".NewArray " + node.Type.ToString(), Flow.Space );
+				Out( ".NewArray " + node.Type.GetTypeInfo().ToDeclarationString(), Flow.Space );
 				VisitExpressions( '{', node.Expressions );
 			}
 			return node;
@@ -858,7 +926,7 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitNew( NewExpression node )
 		{
-			Out( ".New " + node.Type.ToString() );
+			Out( "new " + node.Type.GetTypeInfo().ToDeclarationString() );
 			VisitExpressions( '(', node.Arguments );
 			return node;
 		}
@@ -936,10 +1004,10 @@ namespace System.Linq.Expressions
 			switch ( node.NodeType )
 			{
 				case ExpressionType.Convert:
-					Out( "(" + node.Type.ToString() + ")" );
+					Out( "(" + node.Type.GetTypeInfo().ToDeclarationString() + ")" );
 					break;
 				case ExpressionType.ConvertChecked:
-					Out( "#(" + node.Type.ToString() + ")" );
+					Out( "#(" + node.Type.GetTypeInfo().ToDeclarationString() + ")" );
 					break;
 				case ExpressionType.TypeAs:
 					break;
@@ -1002,7 +1070,7 @@ namespace System.Linq.Expressions
 			{
 				case ExpressionType.TypeAs:
 					Out( Flow.Space, ".As", Flow.Space | Flow.Break );
-					Out( node.Type.ToString() );
+					Out( node.Type.GetTypeInfo().ToDeclarationString() );
 					break;
 
 				case ExpressionType.ArrayLength:
@@ -1022,20 +1090,45 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitBlock( BlockExpression node )
 		{
-			Out( ".Block" );
-			Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString() ) );
+			if ( node.Type != typeof( void ) )
+				Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.GetTypeInfo().ToDeclarationString() ) );
 
-			VisitDeclarations( node.Variables );
-			Out( " " );
-			// Use ; to separate expressions in the block
-			VisitExpressions( '{', ';', node.Expressions );
+			OutLine( "{" );
+			Indent();
+
+			foreach ( ParameterExpression variable in node.Variables )
+			{
+				Out( variable.Type.GetTypeInfo().ToDeclarationString() );
+				if ( variable.IsByRef )
+				{
+					Out( "&" );
+				}
+				Out( " " );
+				VisitParameter( variable );
+				Out( ";", Flow.NewLine );
+			}
+
+			WriteLine();
+
+			foreach ( Expression expression in node.Expressions )
+			{
+				Visit( expression );
+				Out( ";", Flow.NewLine );
+			}
+
+			Dedent();
+			OutLine( "}" );
 
 			return node;
 		}
 
 		protected override Expression VisitDefault( DefaultExpression node )
 		{
-			Out( ".Default(" + node.Type.ToString() + ")" );
+			if ( !node.Type.GetTypeInfo().IsValueType )
+				Out( "null" );
+			else
+				Out( "default(" + node.Type.GetTypeInfo().ToDeclarationString() + ")" );
+
 			return node;
 		}
 
@@ -1052,7 +1145,7 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitGoto( GotoExpression node )
 		{
-			Out( "." + node.Kind.ToString(), Flow.Space );
+			Out( node.Kind.ToString().ToLowerInvariant(), Flow.Space );
 			Out( GetLabelTargetName( node.Target ), Flow.Space );
 			Out( "{", Flow.Space );
 			Visit( node.Value );
@@ -1062,16 +1155,16 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitLoop( LoopExpression node )
 		{
-			Out( ".Loop", Flow.Space );
+			Out( "while ( true )", Flow.Space );
 			if ( node.ContinueLabel != null )
 			{
 				DumpLabel( node.ContinueLabel );
 			}
-			Out( " {", Flow.NewLine );
+			OutLine( "{" );
 			Indent();
 			Visit( node.Body );
 			Dedent();
-			Out( Flow.NewLine, "}" );
+			OutLine( "}" );
 			if ( node.BreakLabel != null )
 			{
 				Out( "", Flow.NewLine );
@@ -1084,33 +1177,36 @@ namespace System.Linq.Expressions
 		{
 			foreach ( var test in node.TestValues )
 			{
-				Out( ".Case (" );
+				Out( "case " );
 				Visit( test );
-				Out( "):", Flow.NewLine );
+				Out( ":", Flow.NewLine );
 			}
-			Indent(); Indent();
+			Indent();
 			Visit( node.Body );
-			Dedent(); Dedent();
+			Dedent();
 			NewLine();
 			return node;
 		}
 
 		protected override Expression VisitSwitch( SwitchExpression node )
 		{
-			Out( ".Switch " );
-			Out( "(" );
+			Out( "switch " );
+			Out( "( " );
 			Visit( node.SwitchValue );
-			Out( ") {", Flow.NewLine );
+			Out( " )" );
+			OutLine( "{" );
+			Indent();
 			Visit( node.Cases, VisitSwitchCase );
 			if ( node.DefaultBody != null )
 			{
-				Out( ".Default:", Flow.NewLine );
-				Indent(); Indent();
+				Out( "default:", Flow.NewLine );
+				Indent();
 				Visit( node.DefaultBody );
-				Dedent(); Dedent();
+				Dedent();
 				NewLine();
 			}
-			Out( "}" );
+			Dedent();
+			OutLine( "}" );
 			return node;
 		}
 
@@ -1208,7 +1304,7 @@ namespace System.Linq.Expressions
 
 		private void DumpLabel( LabelTarget target )
 		{
-			Out( String.Format( CultureInfo.CurrentCulture, ".LabelTarget {0}:", GetLabelTargetName( target ) ) );
+			Out( String.Format( CultureInfo.CurrentCulture, "{0}:", GetLabelTargetName( target ) ) );
 		}
 
 		private string GetLabelTargetName( LabelTarget target )
@@ -1231,7 +1327,7 @@ namespace System.Linq.Expressions
 					  CultureInfo.CurrentCulture,
 					  ".Lambda {0}<{1}>",
 					  GetLambdaName( lambda ),
-					  lambda.Type.ToString() )
+					  lambda.Type.GetTypeInfo().ToDeclarationString() )
 			);
 
 			VisitDeclarations( lambda.Parameters );
