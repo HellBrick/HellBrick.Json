@@ -489,23 +489,25 @@ namespace System.Linq.Expressions
 				Dedent();
 				Out( Flow.NewLine, ")" );
 			}
-			OutLine( "{" );
-			Indent();
-			Visit( node.IfTrue );
-			Dedent();
-			OutLine( "}" );
+
+			VisitBranch( node.IfTrue );
 
 			if ( !HasEmptyElseClause( node ) )
 			{
 				Out( "else" );
-				OutLine( "{" );
-				Indent();
-				Visit( node.IfFalse );
-				Dedent();
-				OutLine( "}" );
+				VisitBranch( node.IfFalse );
 			}
 
 			return node;
+		}
+
+		private void VisitBranch( Expression branch )
+		{
+			OutLine( "{" );
+			Indent();
+			Visit( branch );
+			Dedent();
+			OutLine( "}" );
 		}
 
 		private static bool HasEmptyElseClause( ConditionalExpression node )
