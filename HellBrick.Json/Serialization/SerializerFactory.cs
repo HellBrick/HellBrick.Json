@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using HellBrick.Json.Utils;
 using Newtonsoft.Json;
 
 namespace HellBrick.Json.Serialization
@@ -18,7 +19,7 @@ namespace HellBrick.Json.Serialization
 			Expression serializationBody = ExpressionFactory.Serialize( value, writer );
 			Expression<Action<T, JsonWriter>> lambda = Expression.Lambda<Action<T, JsonWriter>>( serializationBody, value, writer );
 			Action<T, JsonWriter> serializationMethod = lambda.Compile();
-			return new JsonSerializer<T>( serializationMethod );
+			return new JsonSerializer<T>( serializationMethod, serializationBody.ToDebugView() );
 		}
 	}
 }

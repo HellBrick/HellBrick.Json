@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using HellBrick.Json.Utils;
 using Newtonsoft.Json;
 
 namespace HellBrick.Json.Deserialization
@@ -17,7 +18,7 @@ namespace HellBrick.Json.Deserialization
 			Expression deserializationBody = ExpressionFactory.Deserialize( typeof( T ), writer );
 			Expression<Func<JsonReader, T>> lambda = Expression.Lambda<Func<JsonReader, T>>( deserializationBody, writer );
 			Func<JsonReader, T> deserializationMethod = lambda.Compile();
-			return new JsonDeserializer<T>( deserializationMethod );
+			return new JsonDeserializer<T>( deserializationMethod, deserializationBody.ToDebugView() );
 		}
 	}
 }
