@@ -925,7 +925,7 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitNew( NewExpression node )
 		{
-			Out( ".New " + node.Type.ToString() );
+			Out( "new " + node.Type.ToString() );
 			VisitExpressions( '(', node.Arguments );
 			return node;
 		}
