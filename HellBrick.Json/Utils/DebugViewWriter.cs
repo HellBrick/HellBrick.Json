@@ -568,6 +568,15 @@ namespace System.Linq.Expressions
 				return node;
 			}
 
+			TypeInfo typeInfo = node.Type.GetTypeInfo();
+			if ( value is Enum && typeInfo.IsEnum && Enum.IsDefined( node.Type, value ) )
+			{
+				Out( node.Type.ToString() );
+				Out( "." );
+				Out( value.ToString() );
+				return node;
+			}
+
 			Out( String.Format(
 				 CultureInfo.CurrentCulture,
 				 ".Constant<{0}>({1})",
