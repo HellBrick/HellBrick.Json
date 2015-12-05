@@ -530,43 +530,50 @@ namespace System.Linq.Expressions
 			if ( value == null )
 			{
 				Out( "null" );
+				return node;
 			}
-			else if ( ( value is string ) && node.Type == typeof( string ) )
+
+			if ( ( value is string ) && node.Type == typeof( string ) )
 			{
 				Out( String.Format(
 					 CultureInfo.CurrentCulture,
 					 "\"{0}\"",
 					 value ) );
+
+				return node;
 			}
-			else if ( ( value is char ) && node.Type == typeof( char ) )
+
+			if ( ( value is char ) && node.Type == typeof( char ) )
 			{
 				Out( String.Format(
 					 CultureInfo.CurrentCulture,
 					 "'{0}'",
 					 value ) );
+
+				return node;
 			}
-			else if ( ( value is int ) && node.Type == typeof( int )
+
+			if ( ( value is int ) && node.Type == typeof( int )
 			  || ( value is bool ) && node.Type == typeof( bool ) )
 			{
 				Out( value.ToString() );
+				return node;
 			}
-			else
+
+			string suffix = GetConstantValueSuffix( node.Type );
+			if ( suffix != null )
 			{
-				string suffix = GetConstantValueSuffix( node.Type );
-				if ( suffix != null )
-				{
-					Out( value.ToString() );
-					Out( suffix );
-				}
-				else
-				{
-					Out( String.Format(
-						 CultureInfo.CurrentCulture,
-						 ".Constant<{0}>({1})",
-						 node.Type.ToString(),
-						 value ) );
-				}
+				Out( value.ToString() );
+				Out( suffix );
+				return node;
 			}
+
+			Out( String.Format(
+				 CultureInfo.CurrentCulture,
+				 ".Constant<{0}>({1})",
+				 node.Type.ToString(),
+				 value ) );
+
 			return node;
 		}
 
