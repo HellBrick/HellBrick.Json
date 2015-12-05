@@ -1072,7 +1072,7 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitLoop( LoopExpression node )
 		{
-			Out( ".Loop", Flow.Space );
+			Out( "while ( true )", Flow.Space );
 			if ( node.ContinueLabel != null )
 			{
 				DumpLabel( node.ContinueLabel );
