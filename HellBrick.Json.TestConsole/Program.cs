@@ -17,9 +17,11 @@ namespace HellBrick.Json.TestConsole
 
 			for ( int i = 0; i < 2; i++ )
 			{
-				string text = JsonFactory.SerializerFor<Whatever[]>().Serialize( list );
+				JsonSerializer<Whatever[]> jsonSerializer = JsonFactory.SerializerFor<Whatever[]>();
+				string text = jsonSerializer.Serialize( list );
 				Console.WriteLine( text );
-				list = JsonFactory.DeserializerFor<Whatever[]>().Deserialize( text );
+				JsonDeserializer<Whatever[]> jsonDeserializer = JsonFactory.DeserializerFor<Whatever[]>();
+				list = jsonDeserializer.Deserialize( text );
 			}
 		}
 	}

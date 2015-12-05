@@ -12,10 +12,13 @@ namespace HellBrick.Json
 	{
 		private readonly Func<JsonReader, T> _deserializer;
 
-		internal JsonDeserializer( Func<JsonReader, T> deserializer )
+		internal JsonDeserializer( Func<JsonReader, T> deserializer, string pseudoCode )
 		{
 			_deserializer = deserializer;
+			PseudoCode = pseudoCode;
 		}
+
+		public string PseudoCode { get; }
 
 		public T Deserialize( string jsonString )
 		{
