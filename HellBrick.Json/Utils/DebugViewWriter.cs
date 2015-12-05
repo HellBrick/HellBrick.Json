@@ -1032,8 +1032,8 @@ namespace System.Linq.Expressions
 
 		protected override Expression VisitBlock( BlockExpression node )
 		{
-			Out( ".Block" );
-			Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString() ) );
+			if ( node.Type != typeof( void ) )
+				Out( String.Format( CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString() ) );
 
 			VisitDeclarations( node.Variables );
 			Out( " " );
