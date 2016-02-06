@@ -12,6 +12,23 @@ namespace HellBrick.Json.Benchmarks.RoundTrip
 		private static readonly JsonSerializer<T> _hellBrickSerializer = JsonFactory.SerializerFor<T>();
 		private static readonly JsonDeserializer<T> _hellBrickDeserializer = JsonFactory.DeserializerFor<T>();
 
+		static RoundTripBenchmarkCore()
+		{
+			WarmUpJil();
+		}
+
+		private static void WarmUpJil()
+		{
+			try
+			{
+				JilJson( default( T ) );
+			}
+			catch
+			{
+				// Jil throws on some types that it doesn't support properly.
+			}
+		}
+
 		private readonly T _value;
 
 		public RoundTripBenchmarkCore( T value )
@@ -29,6 +46,14 @@ namespace HellBrick.Json.Benchmarks.RoundTrip
 		{
 			string json = JsonConvert.SerializeObject( _value );
 			T newValue = JsonConvert.DeserializeObject<T>( json );
+		}
+
+		public void JilJson() => JilJson( _value );
+
+		private static void JilJson( T value )
+		{
+			string json = Jil.JSON.Serialize( value );
+			value = Jil.JSON.Deserialize<T>( json );
 		}
 	}
 }
