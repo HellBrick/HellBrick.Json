@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FlatClass.cs" />
+    <Compile Include="Common\JilCompatibleFlatClass.cs" />
     <Compile Include="Deserialization\IntArrayDeserializationBenchmark.cs" />
     <Compile Include="Deserialization\FlatClassDeserializationBenchmark.cs" />
     <Compile Include="Deserialization\DeserializationBenchmarkCore.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="RoundTrip\FlatClassRoundTripBenchmark.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoundTrip\JilCompatibleFlatClassRoundTripBenchmark.cs" />
     <Compile Include="RoundTrip\RoundTripBenchmarkCore.cs" />
     <Compile Include="Serialization\IntArraySerializationBenchmark.cs" />
     <Compile Include="Serialization\FlatClassSerializationBenchmark.cs" />
