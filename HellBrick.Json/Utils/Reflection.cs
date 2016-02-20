@@ -10,6 +10,7 @@ namespace HellBrick.Json.Utils
 {
 	public static class Reflection
 	{
+		public static MethodInfo Method( Expression<Action> expr ) => ExtractMethod( expr as LambdaExpression );
 		public static MethodInfo Method<TArg>( Expression<Action<TArg>> expr ) => ExtractMethod( expr as LambdaExpression );
 		public static MethodInfo Method<TArg1, TArg2>( Expression<Action<TArg1, TArg2>> expr ) => ExtractMethod( expr as LambdaExpression );
 		public static MethodInfo Method<TArg1, TArg2, TArg3>( Expression<Action<TArg1, TArg2, TArg3>> expr ) => ExtractMethod( expr as LambdaExpression );

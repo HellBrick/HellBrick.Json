@@ -48,6 +48,7 @@
     <Compile Include="Deserialization\Providers\ArrayDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\ClassDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\CollectionDeserializerBuilderProvider.cs" />
+    <Compile Include="Deserialization\Providers\EnumDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\Int64DeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\NonNullableValueDeserializerBuilderProvider.cs" />
     <Compile Include="Deserialization\Providers\NullableValueDeserializerBuilderProvider.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Serialization\Providers\ArraySerializerBuilderProvider.cs" />
     <Compile Include="Serialization\Providers\ClassSerializerBuilderProvider.cs" />
     <Compile Include="Serialization\Providers\CollectionSerializerBuilderProvider.cs" />
+    <Compile Include="Serialization\Providers\EnumSerializerBuilderProvider.cs" />
     <Compile Include="Serialization\Providers\ValueSerializerBuilderProvider.cs" />
     <Compile Include="Serialization\ReferenceTypeSerializerBuilder.cs" />
     <Compile Include="Serialization\SerializerBuilderSelector.cs" />
