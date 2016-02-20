@@ -77,7 +77,7 @@ namespace HellBrick.Json.Deserialization.Providers
 
 				yield return IfThen
 				(
-					Or
+					OrElse
 					(
 						Not( Call( reader, JsonReaderMembers.Read ) ),
 						NotEqual( Property( reader, JsonReaderMembers.TokenType ), Constant( JsonToken.StartObject ) )
