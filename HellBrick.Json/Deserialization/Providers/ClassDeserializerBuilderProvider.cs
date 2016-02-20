@@ -77,12 +77,17 @@ namespace HellBrick.Json.Deserialization.Providers
 
 				yield return IfThen
 				(
-					OrElse
+					NotEqual( Property( reader, JsonReaderMembers.TokenType ), Constant( JsonToken.StartObject ) ),
+
+					IfThen
 					(
-						Not( Call( reader, JsonReaderMembers.Read ) ),
-						NotEqual( Property( reader, JsonReaderMembers.TokenType ), Constant( JsonToken.StartObject ) )
-					),
-					Return( returnTarget, Default( typeof( T ) ) )
+						OrElse
+						(
+							Not( Call( reader, JsonReaderMembers.Read ) ),
+							NotEqual( Property( reader, JsonReaderMembers.TokenType ), Constant( JsonToken.StartObject ) )
+						),
+						Return( returnTarget, Default( typeof( T ) ) )
+					)
 				);
 
 				yield return Assign( locals.Result, New( _classInfo.Constructor ) );
