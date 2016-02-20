@@ -37,15 +37,23 @@ namespace HellBrick.Json.TestConsole
 			X = x;
 			Y = x.ToString();
 			Sub = new SubClass() { Timestamp = DateTime.UtcNow };
+			Type = SomeEnum.Something;
 		}
 
 		public int X { get; set; }
 		public string Y { get; set; }
 		public SubClass Sub { get; set; }
+		public SomeEnum Type { get; set; }
 	}
 
 	class SubClass
 	{
 		public DateTime Timestamp { get; set; }
+	}
+
+	enum SomeEnum
+	{
+		None = 0,
+		Something = 5
 	}
 }
