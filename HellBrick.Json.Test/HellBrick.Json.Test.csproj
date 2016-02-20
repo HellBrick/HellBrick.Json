@@ -81,6 +81,7 @@
     <Compile Include="Assertions.cs" />
     <Compile Include="DateTimeTests.cs" />
     <Compile Include="PrimitiveTests.cs" />
+    <Compile Include="Types\SomeEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

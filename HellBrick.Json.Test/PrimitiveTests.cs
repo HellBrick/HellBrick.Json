@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using HellBrick.Json.Test.Types;
 using Xunit;
 
 namespace HellBrick.Json.Test
@@ -61,5 +62,10 @@ namespace HellBrick.Json.Test
 		{
 			"\"http://bogus.host/юникод?p=42\"".Should().RoundTripThrough( new Uri( "http://bogus.host/юникод?p=42" ) );
 		}
+
+		[Theory]
+		[InlineData( SomeEnum.Something, "\"Something\"" )]
+		[InlineData( (SomeEnum) ( -1 ), "-1" )]
+		public void Enum( SomeEnum value, string json ) => json.Should().RoundTripThrough( value );
 	}
 }
