@@ -13,6 +13,7 @@ namespace HellBrick.Json.Serialization
 		private static readonly ISerializerBuilderProvider[] _providers = new ISerializerBuilderProvider[]
 		{
 			new ValueSerializerBuilderProvider(),
+			new EnumSerializerBuilderProvider(),
 			new ArraySerializerBuilderProvider(),
 			new CollectionSerializerBuilderProvider(),
 			new ClassSerializerBuilderProvider()
